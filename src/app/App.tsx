@@ -30,9 +30,9 @@ export default function App() {
   const [products, setProducts] = useState<Product[]>([]);
   const [tiers, setTiers] = useState<DiscountTier[]>([]);
   const [contactInfo, setContactInfo] = useState<ContactInfo>({
-    whatsapp: "",
+    whatsapp: "wa.me/+963947941447",
     instagram: "",
-    facebook: "",
+    facebook: "https://www.facebook.com/share/1PQrbmGZs2/",
   });
   const [isAdmin, setIsAdmin] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
