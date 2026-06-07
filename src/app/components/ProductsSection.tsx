@@ -186,18 +186,30 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
                     ((e.currentTarget as HTMLElement).style.boxShadow = "0 1px 4px rgba(44,26,14,0.08)")
                   }
                 >
-                  <div
-                    style={{
-                      height: "120px",
-                      backgroundColor: "#2D5016",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "3.5rem",
-                    }}
-                  >
-                    {categoryEmoji[p.category]}
-                  </div>
+                  <div style={{ 
+  height: "120px", 
+  backgroundColor: p.image_url ? "transparent" : "#2D5016", 
+  display: "flex", 
+  alignItems: "center", 
+  justifyContent: "center", 
+  overflow: "hidden"
+}}>
+  {p.image_url ? (
+    <img 
+      src={p.image_url} 
+      alt={localized.name} 
+      style={{
+        width: "100%",
+        height: "100%",
+        objectFit: "cover"
+      }}
+    />
+  ) : (
+    <span style={{ fontSize: "3.5rem" }}>
+      {categoryEmoji[p.category]}
+    </span>
+  )}
+</div>
                   <div style={{ padding: "18px" }}>
                     <div className="flex items-start justify-between gap-2 mb-2">
                       <div>
