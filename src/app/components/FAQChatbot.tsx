@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Send, MessageCircle, Pencil, Check, X } from "lucide-react";
+import { useLanguage } from "../i18n/LanguageContext";
+import type { Language } from "../i18n/translations";
 
 interface ContactInfo {
   whatsapp: string;
@@ -20,53 +22,88 @@ interface Message {
   timestamp: Date;
 }
 
-const FAQ_RESPONSES: Array<{ keywords: string[]; answer: string }> = [
-  {
-    keywords: ["شحن", "توصيل", "ship", "deliver", "deliver", "cities", "مدن", "مدينة"],
-    answer:
-      "نوصل مباشرة في ديرعطية 🏠\nأما بقية المدن السورية، فنشحن عبر شركة **القدموس** للتوصيل 🚛\n\nللطلب، تواصل معنا عبر واتساب!",
-  },
-  {
-    keywords: ["واتس", "whatsapp", "اتصال", "contact", "تواصل", "رقم", "phone", "number"],
-    answer: "يمكنك التواصل معنا عبر واتساب فقط 📱\nسنضع رقمنا هنا بمجرد إضافته من الإدارة.\n\nكما يمكنك متابعتنا على انستغرام وفيسبوك!",
-  },
-  {
-    keywords: ["سعر", "price", "أسعار", "تخفيض", "discount", "خصم", "كمية", "bulk", "جملة"],
-    answer:
-      "أسعارنا ثابتة وتعكس جودة المنتجات الأصلية من الأرجنتين 🇦🇷\n\nالخصم الوحيد هو لمشتريات الجملة:\n• 3 قطع فأكثر: خصم حسب جدول الأسعار\n\nراجع قسم **خصم الكميات** في الموقع لحساب سعرك!",
-  },
-  {
-    keywords: ["original", "أصلي", "اصلي", "منتج", "product", "argentina", "أرجنتين", "جودة", "quality"],
-    answer:
-      "نعم! جميع منتجاتنا 100% أصلية من الأرجنتين 🇦🇷✨\n\nنستورد مباشرة لضمان الأصالة — لا منتجات مقلدة أو بديلة.\n\nنبيع:\n🌿 يربا ماتي\n🥤 بومبيلا (ماصّة ماتي)\n🫙 قرع ماتي (كوب)",
-  },
-  {
-    keywords: ["ماتي", "mate", "يرباماتي", "yerba", "bombilla", "بومبيلا", "gourd", "قرع", "كوب"],
-    answer:
-      "نوفر 3 أنواع من المنتجات:\n\n🌿 **يرباماتي** — أعشاب الماتي المجففة من الأرجنتين\n🥤 **بومبيلا** — ماصّة الماتي المعدنية الأصيلة\n🫙 **قرع الماتي** — أكواب الشرب التقليدية\n\nشاهد منتجاتنا الكاملة في قسم المنتجات!",
-  },
-  {
-    keywords: ["instagram", "انستغرام", "انستجرام", "facebook", "فيسبوك", "social", "وسائل"],
-    answer: "تابعنا على وسائل التواصل الاجتماعي 📲\nانستغرام وفيسبوك — الروابط في أسفل الصفحة!",
-  },
-  {
-    keywords: ["hello", "hi", "مرحبا", "مرحبً", "هلا", "السلام", "أهلا", "اهلا"],
-    answer:
-      "أهلاً وسهلاً! 👋\n\nأنا هنا للإجابة على أسئلتك حول منتجاتنا، الأسعار، والتوصيل.\n\nكيف أستطيع مساعدتك؟",
-  },
-];
+const FAQ_RESPONSES: Record<Language, Array<{ keywords: string[]; answer: string }>> = {
+  ar: [
+    {
+      keywords: ["شحن", "توصيل", "ship", "deliver", "cities", "مدن", "مدينة"],
+      answer:
+        "نوصل مباشرة في ديرعطية 🏠\nأما بقية المدن السورية، فنشحن عبر شركة **القدموس** للتوصيل 🚛\n\nللطلب، تواصل معنا عبر واتساب!",
+    },
+    {
+      keywords: ["واتس", "whatsapp", "اتصال", "contact", "تواصل", "رقم", "phone", "number"],
+      answer: "يمكنك التواصل معنا عبر واتساب فقط 📱\nسنضع رقمنا هنا بمجرد إضافته من الإدارة.\n\nكما يمكنك متابعتنا على انستغرام وفيسبوك!",
+    },
+    {
+      keywords: ["سعر", "price", "أسعار", "تخفيض", "discount", "خصم", "كمية", "bulk", "جملة"],
+      answer:
+        "أسعارنا ثابتة وتعكس جودة المنتجات الأصلية من الأرجنتين 🇦🇷\n\nالخصم الوحيد هو لمشتريات الجملة:\n• 3 قطع فأكثر: خصم حسب جدول الأسعار\n\nراجع قسم **خصم الكميات** في الموقع لحساب سعرك!",
+    },
+    {
+      keywords: ["original", "أصلي", "اصلي", "منتج", "product", "argentina", "أرجنتين", "جودة", "quality"],
+      answer:
+        "نعم! جميع منتجاتنا 100% أصلية من الأرجنتين 🇦🇷✨\n\nنستورد مباشرة لضمان الأصالة — لا منتجات مقلدة أو بديلة.\n\nنبيع:\n🌿 يربا ماتي\n🥤 بومبيلا (ماصّة ماتي)\n🫙 قرع ماتي (كوب)",
+    },
+    {
+      keywords: ["ماتي", "mate", "يرباماتي", "yerba", "bombilla", "بومبيلا", "gourd", "قرع", "كوب"],
+      answer:
+        "نوفر 3 أنواع من المنتجات:\n\n🌿 **يرباماتي** — أعشاب الماتي المجففة من الأرجنتين\n🥤 **بومبيلا** — ماصّة الماتي المعدنية الأصيلة\n🫙 **قرع الماتي** — أكواب الشرب التقليدية\n\nشاهد منتجاتنا الكاملة في قسم المنتجات!",
+    },
+    {
+      keywords: ["instagram", "انستغرام", "انستجرام", "facebook", "فيسبوك", "social", "وسائل"],
+      answer: "تابعنا على وسائل التواصل الاجتماعي 📲\nانستغرام وفيسبوك — الروابط في أسفل الصفحة!",
+    },
+    {
+      keywords: ["hello", "hi", "مرحبا", "مرحبً", "هلا", "السلام", "أهلا", "اهلا"],
+      answer:
+        "أهلاً وسهلاً! 👋\n\nأنا هنا للإجابة على أسئلتك حول منتجاتنا، الأسعار، والتوصيل.\n\nكيف أستطيع مساعدتك؟",
+    },
+  ],
+  en: [
+    {
+      keywords: ["ship", "deliver", "delivery", "cities", "shipping", "شحن", "توصيل"],
+      answer:
+        "We deliver directly in Deir Atiyeh 🏠\nFor other Syrian cities, we ship via **Al-Kodmous** delivery company 🚛\n\nTo order, contact us on WhatsApp!",
+    },
+    {
+      keywords: ["whatsapp", "contact", "phone", "number", "واتس", "اتصال", "تواصل", "رقم"],
+      answer:
+        "You can reach us on WhatsApp only 📱\nWe'll add our number here once it's set up by admin.\n\nYou can also follow us on Instagram and Facebook!",
+    },
+    {
+      keywords: ["price", "prices", "discount", "bulk", "سعر", "أسعار", "تخفيض", "خصم", "جملة"],
+      answer:
+        "Our prices are fixed and reflect the quality of original Argentine products 🇦🇷\n\nThe only discount is for bulk purchases:\n• 3+ pieces: discount based on our pricing table\n\nCheck the **Bulk Discount** section to calculate your price!",
+    },
+    {
+      keywords: ["original", "product", "argentina", "quality", "أصلي", "منتج", "أرجنتين", "جودة"],
+      answer:
+        "Yes! All our products are 100% original from Argentina 🇦🇷✨\n\nWe import directly to guarantee authenticity — no copies or substitutes.\n\nWe sell:\n🌿 Yerba Mate\n🥤 Bombilla (mate straw)\n🫙 Mate Gourd (cup)",
+    },
+    {
+      keywords: ["mate", "yerba", "bombilla", "gourd", "ماتي", "يرباماتي", "بومبيلا", "قرع", "كوب"],
+      answer:
+        "We offer 3 types of products:\n\n🌿 **Yerba Mate** — dried mate herbs from Argentina\n🥤 **Bombilla** — authentic metal mate straw\n🫙 **Mate Gourd** — traditional drinking cups\n\nSee our full product range in the Products section!",
+    },
+    {
+      keywords: ["instagram", "facebook", "social", "انستغرام", "فيسبوك", "وسائل"],
+      answer: "Follow us on social media 📲\nInstagram and Facebook — links are at the bottom of the page!",
+    },
+    {
+      keywords: ["hello", "hi", "مرحبا", "هلا", "أهلا", "اهلا"],
+      answer:
+        "Hello and welcome! 👋\n\nI'm here to answer your questions about our products, prices, and delivery.\n\nHow can I help you?",
+    },
+  ],
+};
 
-const DEFAULT_RESPONSE =
-  "شكراً لسؤالك! 😊\n\nيمكنني مساعدتك في:\n• معلومات المنتجات\n• الأسعار والخصومات\n• التوصيل والشحن\n• التواصل معنا\n\nأو تواصل معنا مباشرة عبر واتساب!";
-
-function getBotResponse(input: string): string {
+function getBotResponse(input: string, lang: Language, defaultResponse: string): string {
   const lower = input.toLowerCase();
-  for (const faq of FAQ_RESPONSES) {
+  for (const faq of FAQ_RESPONSES[lang]) {
     if (faq.keywords.some((kw) => lower.includes(kw))) {
       return faq.answer;
     }
   }
-  return DEFAULT_RESPONSE;
+  return defaultResponse;
 }
 
 function renderMarkdown(text: string) {
@@ -79,11 +116,15 @@ function renderMarkdown(text: string) {
 }
 
 export function FAQChatbot({ contactInfo, onUpdateContact, isAdmin }: FAQChatbotProps) {
+  const { t, language, isRTL } = useLanguage();
+  const fontFamily = isRTL ? "'Cairo', sans-serif" : "'Lato', sans-serif";
+  const serifFamily = isRTL ? "'Cairo', sans-serif" : "'Playfair Display', serif";
+
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
       role: "bot",
-      text: "أهلاً بك في ماتي أرجنتين! 🧉\n\nاسألني عن منتجاتنا، أسعارنا، أو التوصيل وسأساعدك بكل سرور.",
+      text: t.faq.welcome,
       timestamp: new Date(),
     },
   ]);
@@ -91,6 +132,17 @@ export function FAQChatbot({ contactInfo, onUpdateContact, isAdmin }: FAQChatbot
   const [editingContact, setEditingContact] = useState(false);
   const [draftContact, setDraftContact] = useState(contactInfo);
   const endRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setMessages([
+      {
+        id: "welcome",
+        role: "bot",
+        text: t.faq.welcome,
+        timestamp: new Date(),
+      },
+    ]);
+  }, [language, t.faq.welcome]);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -104,7 +156,7 @@ export function FAQChatbot({ contactInfo, onUpdateContact, isAdmin }: FAQChatbot
       text: input.trim(),
       timestamp: new Date(),
     };
-    const botResponse = getBotResponse(input.trim());
+    const botResponse = getBotResponse(input.trim(), language, t.faq.defaultResponse);
     const botMsg: Message = {
       id: (Date.now() + 1).toString(),
       role: "bot",
@@ -130,23 +182,36 @@ export function FAQChatbot({ contactInfo, onUpdateContact, isAdmin }: FAQChatbot
     ? `https://facebook.com/${contactInfo.facebook.replace("@", "")}`
     : null;
 
+  const quickQuestions = [t.faq.quickQ1, t.faq.quickQ2, t.faq.quickQ3, t.faq.quickQ4];
+
+  const handleQuickQuestion = (q: string) => {
+    const userMsg: Message = { id: Date.now().toString(), role: "user", text: q, timestamp: new Date() };
+    const botMsg: Message = {
+      id: (Date.now() + 1).toString(),
+      role: "bot",
+      text: getBotResponse(q, language, t.faq.defaultResponse),
+      timestamp: new Date(),
+    };
+    setMessages((prev) => [...prev, userMsg, botMsg]);
+    setInput("");
+  };
+
   return (
     <section
       id="faq"
-      style={{ backgroundColor: "#F4ECD8", fontFamily: "'Lato', sans-serif", padding: "80px 0" }}
+      style={{ backgroundColor: "#F4ECD8", fontFamily, padding: "80px 0" }}
     >
       <div className="max-w-6xl mx-auto px-6">
         <div className="mb-10">
           <p style={{ color: "#B85C38", fontSize: "0.8rem", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: "4px" }}>
-            Ask Anything
+            {t.faq.subtitle}
           </p>
-          <h2 style={{ fontFamily: "'Playfair Display', serif", color: "#2C1A0E", fontSize: "2rem", fontWeight: 700 }}>
-            FAQ Assistant
+          <h2 style={{ fontFamily: serifFamily, color: "#2C1A0E", fontSize: "2rem", fontWeight: 700 }}>
+            {t.faq.title}
           </h2>
         </div>
 
         <div className="grid md:grid-cols-5 gap-8">
-          {/* Chatbot */}
           <div
             className="md:col-span-3"
             style={{
@@ -159,7 +224,6 @@ export function FAQChatbot({ contactInfo, onUpdateContact, isAdmin }: FAQChatbot
               height: "480px",
             }}
           >
-            {/* Chat header */}
             <div
               style={{
                 backgroundColor: "#2D5016",
@@ -170,10 +234,10 @@ export function FAQChatbot({ contactInfo, onUpdateContact, isAdmin }: FAQChatbot
               }}
             >
               <MessageCircle size={18} style={{ color: "#c5e87a" }} />
-              <span style={{ color: "#F4ECD8", fontWeight: 700, fontSize: "0.9rem" }}>Mate Argentin — مساعد الأسئلة</span>
+              <span style={{ color: "#F4ECD8", fontWeight: 700, fontSize: "0.9rem" }}>{t.faq.chatHeader}</span>
               <div
                 style={{
-                  marginLeft: "auto",
+                  marginInlineStart: "auto",
                   width: "8px",
                   height: "8px",
                   borderRadius: "50%",
@@ -182,7 +246,6 @@ export function FAQChatbot({ contactInfo, onUpdateContact, isAdmin }: FAQChatbot
               />
             </div>
 
-            {/* Messages */}
             <div
               style={{
                 flex: 1,
@@ -199,20 +262,22 @@ export function FAQChatbot({ contactInfo, onUpdateContact, isAdmin }: FAQChatbot
                   key={msg.id}
                   style={{
                     display: "flex",
-                    justifyContent: msg.role === "user" ? "flex-end" : "flex-start",
+                    justifyContent: msg.role === "user" ? (isRTL ? "flex-start" : "flex-end") : (isRTL ? "flex-end" : "flex-start"),
                   }}
                 >
                   <div
                     style={{
                       maxWidth: "78%",
                       padding: "10px 14px",
-                      borderRadius: msg.role === "user" ? "14px 14px 4px 14px" : "14px 14px 14px 4px",
+                      borderRadius: msg.role === "user"
+                        ? isRTL ? "14px 14px 14px 4px" : "14px 14px 4px 14px"
+                        : isRTL ? "14px 14px 4px 14px" : "14px 14px 14px 4px",
                       backgroundColor: msg.role === "user" ? "#2D5016" : "#EDE0C4",
                       color: msg.role === "user" ? "#F4ECD8" : "#2C1A0E",
                       fontSize: "0.87rem",
                       lineHeight: 1.65,
-                      direction: "rtl",
-                      textAlign: "right",
+                      direction: isRTL ? "rtl" : "ltr",
+                      textAlign: isRTL ? "right" : "left",
                     }}
                   >
                     {renderMarkdown(msg.text)}
@@ -222,7 +287,6 @@ export function FAQChatbot({ contactInfo, onUpdateContact, isAdmin }: FAQChatbot
               <div ref={endRef} />
             </div>
 
-            {/* Input */}
             <div
               style={{
                 padding: "12px 14px",
@@ -236,7 +300,7 @@ export function FAQChatbot({ contactInfo, onUpdateContact, isAdmin }: FAQChatbot
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-                placeholder="اكتب سؤالك هنا... / Type your question..."
+                placeholder={t.faq.inputPlaceholder}
                 style={{
                   flex: 1,
                   padding: "9px 12px",
@@ -245,7 +309,7 @@ export function FAQChatbot({ contactInfo, onUpdateContact, isAdmin }: FAQChatbot
                   backgroundColor: "#EDE0C4",
                   color: "#2C1A0E",
                   fontSize: "0.88rem",
-                  direction: "rtl",
+                  direction: isRTL ? "rtl" : "ltr",
                 }}
               />
               <button
@@ -270,7 +334,6 @@ export function FAQChatbot({ contactInfo, onUpdateContact, isAdmin }: FAQChatbot
             </div>
           </div>
 
-          {/* Contact info panel */}
           <div className="md:col-span-2 flex flex-col gap-6">
             <div
               style={{
@@ -281,8 +344,8 @@ export function FAQChatbot({ contactInfo, onUpdateContact, isAdmin }: FAQChatbot
               }}
             >
               <div className="flex items-center justify-between mb-5">
-                <h3 style={{ fontFamily: "'Playfair Display', serif", color: "#2C1A0E", fontSize: "1.05rem", fontWeight: 700 }}>
-                  Contact Us
+                <h3 style={{ fontFamily: serifFamily, color: "#2C1A0E", fontSize: "1.05rem", fontWeight: 700 }}>
+                  {t.faq.contactUs}
                 </h3>
                 {isAdmin && !editingContact && (
                   <button
@@ -300,17 +363,16 @@ export function FAQChatbot({ contactInfo, onUpdateContact, isAdmin }: FAQChatbot
                       cursor: "pointer",
                     }}
                   >
-                    <Pencil size={11} /> Edit
+                    <Pencil size={11} /> {t.faq.edit}
                   </button>
                 )}
               </div>
 
               {!editingContact ? (
                 <div className="flex flex-col gap-4">
-                  {/* WhatsApp */}
                   <div>
                     <p style={{ fontSize: "0.75rem", color: "#6B5340", marginBottom: "4px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                      WhatsApp Only
+                      {t.faq.whatsappOnly}
                     </p>
                     {whatsappUrl ? (
                       <a
@@ -334,15 +396,14 @@ export function FAQChatbot({ contactInfo, onUpdateContact, isAdmin }: FAQChatbot
                       </a>
                     ) : (
                       <p style={{ color: "#D4C5A0", fontSize: "0.85rem", fontStyle: "italic" }}>
-                        {isAdmin ? "Add WhatsApp number in edit mode" : "WhatsApp coming soon"}
+                        {isAdmin ? t.faq.whatsappAddAdmin : t.faq.whatsappComingSoon}
                       </p>
                     )}
                   </div>
 
-                  {/* Instagram */}
                   <div>
                     <p style={{ fontSize: "0.75rem", color: "#6B5340", marginBottom: "4px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                      Instagram
+                      {t.faq.instagram}
                     </p>
                     {instagramUrl ? (
                       <a
@@ -366,15 +427,14 @@ export function FAQChatbot({ contactInfo, onUpdateContact, isAdmin }: FAQChatbot
                       </a>
                     ) : (
                       <p style={{ color: "#D4C5A0", fontSize: "0.85rem", fontStyle: "italic" }}>
-                        {isAdmin ? "Add Instagram handle in edit mode" : "Instagram coming soon"}
+                        {isAdmin ? t.faq.instagramAddAdmin : t.faq.instagramComingSoon}
                       </p>
                     )}
                   </div>
 
-                  {/* Facebook */}
                   <div>
                     <p style={{ fontSize: "0.75rem", color: "#6B5340", marginBottom: "4px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                      Facebook
+                      {t.faq.facebook}
                     </p>
                     {facebookUrl ? (
                       <a
@@ -398,7 +458,7 @@ export function FAQChatbot({ contactInfo, onUpdateContact, isAdmin }: FAQChatbot
                       </a>
                     ) : (
                       <p style={{ color: "#D4C5A0", fontSize: "0.85rem", fontStyle: "italic" }}>
-                        {isAdmin ? "Add Facebook page in edit mode" : "Facebook coming soon"}
+                        {isAdmin ? t.faq.facebookAddAdmin : t.faq.facebookComingSoon}
                       </p>
                     )}
                   </div>
@@ -406,9 +466,9 @@ export function FAQChatbot({ contactInfo, onUpdateContact, isAdmin }: FAQChatbot
               ) : (
                 <div className="flex flex-col gap-3">
                   {[
-                    { key: "whatsapp", label: "WhatsApp Number", placeholder: "+963 9XX XXX XXXX" },
-                    { key: "instagram", label: "Instagram Handle", placeholder: "@yourpage" },
-                    { key: "facebook", label: "Facebook Page", placeholder: "yourpagename" },
+                    { key: "whatsapp", label: t.faq.whatsappNumber, placeholder: "+963 9XX XXX XXXX" },
+                    { key: "instagram", label: t.faq.instagramHandle, placeholder: "@yourpage" },
+                    { key: "facebook", label: t.faq.facebookPage, placeholder: "yourpagename" },
                   ].map(({ key, label, placeholder }) => (
                     <div key={key}>
                       <label style={{ display: "block", color: "#2C1A0E", fontSize: "0.8rem", marginBottom: "4px", fontWeight: 600 }}>
@@ -449,7 +509,7 @@ export function FAQChatbot({ contactInfo, onUpdateContact, isAdmin }: FAQChatbot
                         gap: "4px",
                       }}
                     >
-                      <X size={13} /> Cancel
+                      <X size={13} /> {t.faq.cancel}
                     </button>
                     <button
                       onClick={saveContact}
@@ -469,14 +529,13 @@ export function FAQChatbot({ contactInfo, onUpdateContact, isAdmin }: FAQChatbot
                         gap: "4px",
                       }}
                     >
-                      <Check size={13} /> Save
+                      <Check size={13} /> {t.faq.save}
                     </button>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Quick questions */}
             <div
               style={{
                 backgroundColor: "#EDE0C4",
@@ -486,43 +545,23 @@ export function FAQChatbot({ contactInfo, onUpdateContact, isAdmin }: FAQChatbot
               }}
             >
               <p style={{ color: "#6B5340", fontSize: "0.8rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "10px" }}>
-                Quick Questions
+                {t.faq.quickQuestions}
               </p>
               <div className="flex flex-col gap-2">
-                {[
-                  "كيف يتم التوصيل؟",
-                  "هل المنتجات أصلية؟",
-                  "كيف أحصل على خصم؟",
-                  "ما أنواع المنتجات؟",
-                ].map((q) => (
+                {quickQuestions.map((q) => (
                   <button
                     key={q}
-                    onClick={() => {
-                      setInput(q);
-                      setTimeout(() => {
-                        const btn = document.querySelector("[data-send]") as HTMLButtonElement;
-                        if (btn) btn.click();
-                      }, 50);
-                      const userMsg: Message = { id: Date.now().toString(), role: "user", text: q, timestamp: new Date() };
-                      const botMsg: Message = {
-                        id: (Date.now() + 1).toString(),
-                        role: "bot",
-                        text: getBotResponse(q),
-                        timestamp: new Date(),
-                      };
-                      setMessages((prev) => [...prev, userMsg, botMsg]);
-                      setInput("");
-                    }}
+                    onClick={() => handleQuickQuestion(q)}
                     style={{
                       padding: "8px 12px",
-                      textAlign: "right",
+                      textAlign: isRTL ? "right" : "left",
                       border: "1px solid rgba(44,26,14,0.15)",
                       borderRadius: "6px",
                       backgroundColor: "#F4ECD8",
                       color: "#2C1A0E",
                       cursor: "pointer",
                       fontSize: "0.83rem",
-                      direction: "rtl",
+                      direction: isRTL ? "rtl" : "ltr",
                       transition: "background-color 0.15s",
                     }}
                     onMouseOver={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "#EDE0C4")}

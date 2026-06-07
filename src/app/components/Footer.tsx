@@ -1,4 +1,5 @@
 import { Leaf } from "lucide-react";
+import { useLanguage, interpolate } from "../i18n/LanguageContext";
 
 interface FooterProps {
   contactInfo: {
@@ -10,55 +11,54 @@ interface FooterProps {
 
 export function Footer({ contactInfo }: FooterProps) {
   const year = new Date().getFullYear();
+  const { t, isRTL } = useLanguage();
+  const fontFamily = isRTL ? "'Cairo', sans-serif" : "'Lato', sans-serif";
+  const serifFamily = isRTL ? "'Cairo', sans-serif" : "'Playfair Display', serif";
 
   return (
     <footer
       style={{
         backgroundColor: "#2C1A0E",
-        fontFamily: "'Lato', sans-serif",
+        fontFamily,
         padding: "48px 0 28px",
         color: "#D4C5A0",
       }}
     >
       <div className="max-w-6xl mx-auto px-6">
         <div className="grid md:grid-cols-3 gap-10 mb-10">
-          {/* Brand */}
           <div>
             <div className="flex items-center gap-2 mb-4">
               <Leaf size={20} style={{ color: "#c5e87a" }} />
               <span
                 style={{
-                  fontFamily: "'Playfair Display', serif",
+                  fontFamily: serifFamily,
                   color: "#F4ECD8",
                   fontSize: "1.15rem",
                   fontWeight: 700,
                 }}
               >
-                Mate Argentin
+                {t.brand}
               </span>
             </div>
             <p style={{ fontSize: "0.87rem", lineHeight: 1.7, color: "rgba(212,197,160,0.8)" }}>
-              Authentic Argentine mate products delivered to your door in Syria.
-              100% original — no imitations.
+              {t.footer.tagline}
             </p>
           </div>
 
-          {/* Delivery */}
           <div>
             <h4 style={{ color: "#F4ECD8", fontSize: "0.9rem", fontWeight: 700, marginBottom: "12px", letterSpacing: "0.05em" }}>
-              Delivery
+              {t.footer.delivery}
             </h4>
             <ul style={{ listStyle: "none", padding: 0, margin: 0, fontSize: "0.85rem", lineHeight: 2 }}>
-              <li>📍 Local delivery — Deir Atiyeh</li>
-              <li>🚛 Nationwide — via Al-Kodmous</li>
-              <li>📦 Carefully packaged orders</li>
+              <li>{t.footer.localDelivery}</li>
+              <li>{t.footer.nationwide}</li>
+              <li>{t.footer.packaged}</li>
             </ul>
           </div>
 
-          {/* Contact */}
           <div>
             <h4 style={{ color: "#F4ECD8", fontSize: "0.9rem", fontWeight: 700, marginBottom: "12px", letterSpacing: "0.05em" }}>
-              Follow Us
+              {t.footer.followUs}
             </h4>
             <div className="flex flex-col gap-2">
               {contactInfo.whatsapp ? (
@@ -71,7 +71,7 @@ export function Footer({ contactInfo }: FooterProps) {
                   💬 WhatsApp: {contactInfo.whatsapp}
                 </a>
               ) : (
-                <span style={{ opacity: 0.45, fontSize: "0.85rem" }}>💬 WhatsApp — coming soon</span>
+                <span style={{ opacity: 0.45, fontSize: "0.85rem" }}>{t.footer.whatsappComingSoon}</span>
               )}
               {contactInfo.instagram ? (
                 <a
@@ -83,7 +83,7 @@ export function Footer({ contactInfo }: FooterProps) {
                   📸 @{contactInfo.instagram.replace("@", "")}
                 </a>
               ) : (
-                <span style={{ opacity: 0.45, fontSize: "0.85rem" }}>📸 Instagram — coming soon</span>
+                <span style={{ opacity: 0.45, fontSize: "0.85rem" }}>{t.footer.instagramComingSoon}</span>
               )}
               {contactInfo.facebook ? (
                 <a
@@ -95,7 +95,7 @@ export function Footer({ contactInfo }: FooterProps) {
                   👍 {contactInfo.facebook.replace("@", "")}
                 </a>
               ) : (
-                <span style={{ opacity: 0.45, fontSize: "0.85rem" }}>👍 Facebook — coming soon</span>
+                <span style={{ opacity: 0.45, fontSize: "0.85rem" }}>{t.footer.facebookComingSoon}</span>
               )}
             </div>
           </div>
@@ -114,8 +114,8 @@ export function Footer({ contactInfo }: FooterProps) {
             color: "rgba(212,197,160,0.5)",
           }}
         >
-          <span>© {year} Mate Argentin — All rights reserved</span>
-          <span>🇦🇷 Original Products from Argentina</span>
+          <span>{interpolate(t.footer.rights, { year })}</span>
+          <span>{t.footer.original}</span>
         </div>
       </div>
     </footer>

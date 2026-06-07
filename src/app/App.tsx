@@ -6,6 +6,7 @@ import { BulkCalculator } from "./components/BulkCalculator";
 import { AboutSection } from "./components/AboutSection";
 import { FAQChatbot } from "./components/FAQChatbot";
 import { Footer } from "./components/Footer";
+import { useLanguage } from "./i18n/LanguageContext";
 
 interface BulkTier {
   minQty: number;
@@ -74,6 +75,8 @@ const INITIAL_TIERS: BulkTier[] = [
 
 export default function App() {
   // MARKER-MAKE-KIT-INVOKED
+  const { t, isRTL } = useLanguage();
+  const fontFamily = isRTL ? "'Cairo', sans-serif" : "'Lato', sans-serif";
   const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
   const [tiers, setTiers] = useState<BulkTier[]>(INITIAL_TIERS);
   const [contactInfo, setContactInfo] = useState<ContactInfo>({
@@ -106,11 +109,11 @@ export default function App() {
       setIsAdmin(false);
       return;
     }
-    const pw = window.prompt("Enter admin password:");
+    const pw = window.prompt(t.admin.passwordPrompt);
     if (pw === ADMIN_PASSWORD) {
       setIsAdmin(true);
     } else if (pw !== null) {
-      window.alert("Incorrect password.");
+      window.alert(t.admin.incorrectPassword);
     }
   };
 
@@ -127,7 +130,7 @@ export default function App() {
   };
 
   return (
-    <div style={{ fontFamily: "'Lato', sans-serif", minHeight: "100vh", backgroundColor: "#F4ECD8" }}>
+    <div style={{ fontFamily, minHeight: "100vh", backgroundColor: "#F4ECD8" }}>
       {isAdmin && (
         <div
           style={{
@@ -140,7 +143,7 @@ export default function App() {
             letterSpacing: "0.05em",
           }}
         >
-          🔐 ADMIN MODE ACTIVE — You can add, edit, and delete products and settings
+          {t.admin.banner}
         </div>
       )}
 

@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Plus, Pencil, Trash2, X, Check, Package } from "lucide-react";
+import { useLanguage } from "../i18n/LanguageContext";
+import { getLocalizedProduct } from "../i18n/translations";
 
 export type Category = "mate" | "bombilla" | "gourd";
 
@@ -19,12 +21,6 @@ interface ProductsSectionProps {
   isAdmin: boolean;
 }
 
-const categoryLabels: Record<Category, string> = {
-  mate: "Yerba Mate",
-  bombilla: "Bombilla",
-  gourd: "Gourd / Cup",
-};
-
 const categoryEmoji: Record<Category, string> = {
   mate: "🌿",
   bombilla: "🥤",
@@ -39,6 +35,11 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [form, setForm] = useState<Omit<Product, "id">>(EMPTY_FORM);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const { t, language, isRTL } = useLanguage();
+  const fontFamily = isRTL ? "'Cairo', sans-serif" : "'Lato', sans-serif";
+  const serifFamily = isRTL ? "'Cairo', sans-serif" : "'Playfair Display', serif";
+
+  const categoryLabels = t.products.categories;
 
   const filtered = filter === "all" ? products : products.filter((p) => p.category === filter);
 
@@ -79,21 +80,19 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
   return (
     <section
       id="products"
-      style={{ backgroundColor: "#F4ECD8", fontFamily: "'Lato', sans-serif", padding: "80px 0" }}
+      style={{ backgroundColor: "#F4ECD8", fontFamily, padding: "80px 0" }}
     >
       <div className="max-w-6xl mx-auto px-6">
-        {/* Header */}
         <div className="flex flex-wrap items-end justify-between gap-4 mb-10">
           <div>
             <p style={{ color: "#B85C38", fontSize: "0.8rem", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: "4px" }}>
-              Our Collection
+              {t.products.collection}
             </p>
-            <h2 style={{ fontFamily: "'Playfair Display', serif", color: "#2C1A0E", fontSize: "2rem", fontWeight: 700 }}>
-              Products
+            <h2 style={{ fontFamily: serifFamily, color: "#2C1A0E", fontSize: "2rem", fontWeight: 700 }}>
+              {t.products.title}
             </h2>
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            {/* Category filters */}
             {(["all", "mate", "bombilla", "gourd"] as const).map((cat) => (
               <button
                 key={cat}
@@ -110,7 +109,7 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
                   transition: "all 0.2s",
                 }}
               >
-                {cat === "all" ? "All" : categoryLabels[cat]}
+                {cat === "all" ? t.products.all : categoryLabels[cat]}
               </button>
             ))}
             {isAdmin && (
@@ -130,136 +129,139 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
                   fontWeight: 700,
                 }}
               >
-                <Plus size={15} /> Add Product
+                <Plus size={15} /> {t.products.addProduct}
               </button>
             )}
           </div>
         </div>
 
-        {/* Products grid */}
         {filtered.length === 0 ? (
           <div className="text-center py-16">
             <Package size={40} style={{ color: "#D4C5A0", margin: "0 auto 12px" }} />
-            <p style={{ color: "#6B5340" }}>No products yet. {isAdmin ? "Add your first product!" : ""}</p>
+            <p style={{ color: "#6B5340" }}>
+              {t.products.noProducts} {isAdmin ? t.products.addFirst : ""}
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filtered.map((p) => (
-              <div
-                key={p.id}
-                style={{
-                  backgroundColor: "#EDE0C4",
-                  border: "1px solid rgba(44,26,14,0.12)",
-                  borderRadius: "8px",
-                  overflow: "hidden",
-                  transition: "box-shadow 0.2s",
-                  boxShadow: "0 1px 4px rgba(44,26,14,0.08)",
-                }}
-                onMouseOver={(e) =>
-                  ((e.currentTarget as HTMLElement).style.boxShadow = "0 4px 16px rgba(44,26,14,0.15)")
-                }
-                onMouseOut={(e) =>
-                  ((e.currentTarget as HTMLElement).style.boxShadow = "0 1px 4px rgba(44,26,14,0.08)")
-                }
-              >
+            {filtered.map((p) => {
+              const localized = getLocalizedProduct(p.id, p.name, p.description, language);
+              return (
                 <div
+                  key={p.id}
                   style={{
-                    height: "120px",
-                    backgroundColor: "#2D5016",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "3.5rem",
+                    backgroundColor: "#EDE0C4",
+                    border: "1px solid rgba(44,26,14,0.12)",
+                    borderRadius: "8px",
+                    overflow: "hidden",
+                    transition: "box-shadow 0.2s",
+                    boxShadow: "0 1px 4px rgba(44,26,14,0.08)",
                   }}
+                  onMouseOver={(e) =>
+                    ((e.currentTarget as HTMLElement).style.boxShadow = "0 4px 16px rgba(44,26,14,0.15)")
+                  }
+                  onMouseOut={(e) =>
+                    ((e.currentTarget as HTMLElement).style.boxShadow = "0 1px 4px rgba(44,26,14,0.08)")
+                  }
                 >
-                  {categoryEmoji[p.category]}
-                </div>
-                <div style={{ padding: "18px" }}>
-                  <div className="flex items-start justify-between gap-2 mb-2">
-                    <div>
-                      <span
-                        style={{
-                          fontSize: "0.7rem",
-                          color: "#B85C38",
-                          textTransform: "uppercase",
-                          letterSpacing: "0.1em",
-                        }}
-                      >
-                        {categoryLabels[p.category]}
-                      </span>
-                      <h3
-                        style={{
-                          fontFamily: "'Playfair Display', serif",
-                          fontSize: "1.1rem",
-                          color: "#2C1A0E",
-                          fontWeight: 600,
-                          marginTop: "2px",
-                        }}
-                      >
-                        {p.name}
-                      </h3>
-                    </div>
-                    <p
-                      style={{
-                        fontFamily: "'Playfair Display', serif",
-                        fontSize: "1.15rem",
-                        color: "#2D5016",
-                        fontWeight: 700,
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {p.price.toLocaleString()} SP
-                    </p>
+                  <div
+                    style={{
+                      height: "120px",
+                      backgroundColor: "#2D5016",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "3.5rem",
+                    }}
+                  >
+                    {categoryEmoji[p.category]}
                   </div>
-                  <p style={{ color: "#6B5340", fontSize: "0.88rem", lineHeight: 1.6 }}>{p.description}</p>
-
-                  {isAdmin && (
-                    <div className="flex gap-2 mt-4 pt-3" style={{ borderTop: "1px solid rgba(44,26,14,0.1)" }}>
-                      <button
-                        onClick={() => openEdit(p)}
+                  <div style={{ padding: "18px" }}>
+                    <div className="flex items-start justify-between gap-2 mb-2">
+                      <div>
+                        <span
+                          style={{
+                            fontSize: "0.7rem",
+                            color: "#B85C38",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.1em",
+                          }}
+                        >
+                          {categoryLabels[p.category]}
+                        </span>
+                        <h3
+                          style={{
+                            fontFamily: serifFamily,
+                            fontSize: "1.1rem",
+                            color: "#2C1A0E",
+                            fontWeight: 600,
+                            marginTop: "2px",
+                          }}
+                        >
+                          {localized.name}
+                        </h3>
+                      </div>
+                      <p
                         style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "4px",
-                          padding: "5px 12px",
-                          border: "1px solid rgba(44,26,14,0.25)",
-                          borderRadius: "4px",
-                          backgroundColor: "transparent",
-                          color: "#6B5340",
-                          fontSize: "0.8rem",
-                          cursor: "pointer",
+                          fontFamily: serifFamily,
+                          fontSize: "1.15rem",
+                          color: "#2D5016",
+                          fontWeight: 700,
+                          whiteSpace: "nowrap",
                         }}
                       >
-                        <Pencil size={13} /> Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(p.id)}
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "4px",
-                          padding: "5px 12px",
-                          border: `1px solid ${deleteConfirm === p.id ? "#c0392b" : "rgba(192,57,43,0.3)"}`,
-                          borderRadius: "4px",
-                          backgroundColor: deleteConfirm === p.id ? "#c0392b" : "transparent",
-                          color: deleteConfirm === p.id ? "#F4ECD8" : "#c0392b",
-                          fontSize: "0.8rem",
-                          cursor: "pointer",
-                          transition: "all 0.2s",
-                        }}
-                      >
-                        {deleteConfirm === p.id ? <><Check size={13} /> Confirm</> : <><Trash2 size={13} /> Delete</>}
-                      </button>
+                        {p.price.toLocaleString()} SP
+                      </p>
                     </div>
-                  )}
+                    <p style={{ color: "#6B5340", fontSize: "0.88rem", lineHeight: 1.6 }}>{localized.description}</p>
+
+                    {isAdmin && (
+                      <div className="flex gap-2 mt-4 pt-3" style={{ borderTop: "1px solid rgba(44,26,14,0.1)" }}>
+                        <button
+                          onClick={() => openEdit(p)}
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "4px",
+                            padding: "5px 12px",
+                            border: "1px solid rgba(44,26,14,0.25)",
+                            borderRadius: "4px",
+                            backgroundColor: "transparent",
+                            color: "#6B5340",
+                            fontSize: "0.8rem",
+                            cursor: "pointer",
+                          }}
+                        >
+                          <Pencil size={13} /> {t.products.edit}
+                        </button>
+                        <button
+                          onClick={() => handleDelete(p.id)}
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "4px",
+                            padding: "5px 12px",
+                            border: `1px solid ${deleteConfirm === p.id ? "#c0392b" : "rgba(192,57,43,0.3)"}`,
+                            borderRadius: "4px",
+                            backgroundColor: deleteConfirm === p.id ? "#c0392b" : "transparent",
+                            color: deleteConfirm === p.id ? "#F4ECD8" : "#c0392b",
+                            fontSize: "0.8rem",
+                            cursor: "pointer",
+                            transition: "all 0.2s",
+                          }}
+                        >
+                          {deleteConfirm === p.id ? <><Check size={13} /> {t.products.confirm}</> : <><Trash2 size={13} /> {t.products.delete}</>}
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
 
-      {/* Add/Edit Modal */}
       {showForm && (
         <div
           style={{
@@ -287,13 +289,13 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
             <div className="flex items-center justify-between mb-6">
               <h3
                 style={{
-                  fontFamily: "'Playfair Display', serif",
+                  fontFamily: serifFamily,
                   fontSize: "1.3rem",
                   color: "#2C1A0E",
                   fontWeight: 700,
                 }}
               >
-                {editingProduct ? "Edit Product" : "Add Product"}
+                {editingProduct ? t.products.editProduct : t.products.addProduct}
               </h3>
               <button onClick={() => setShowForm(false)} style={{ color: "#6B5340", cursor: "pointer" }}>
                 <X size={20} />
@@ -303,7 +305,7 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
             <div className="flex flex-col gap-4">
               <div>
                 <label style={{ display: "block", color: "#2C1A0E", fontSize: "0.85rem", marginBottom: "6px", fontWeight: 600 }}>
-                  Category
+                  {t.products.category}
                 </label>
                 <select
                   value={form.category}
@@ -318,20 +320,20 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
                     fontSize: "0.9rem",
                   }}
                 >
-                  <option value="mate">Yerba Mate</option>
-                  <option value="bombilla">Bombilla</option>
-                  <option value="gourd">Gourd / Cup</option>
+                  <option value="mate">{categoryLabels.mate}</option>
+                  <option value="bombilla">{categoryLabels.bombilla}</option>
+                  <option value="gourd">{categoryLabels.gourd}</option>
                 </select>
               </div>
 
               <div>
                 <label style={{ display: "block", color: "#2C1A0E", fontSize: "0.85rem", marginBottom: "6px", fontWeight: 600 }}>
-                  Product Name *
+                  {t.products.productName}
                 </label>
                 <input
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  placeholder="e.g. Taragüi Mate 500g"
+                  placeholder={t.products.productNamePlaceholder}
                   style={{
                     width: "100%",
                     padding: "10px 12px",
@@ -347,12 +349,12 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
 
               <div>
                 <label style={{ display: "block", color: "#2C1A0E", fontSize: "0.85rem", marginBottom: "6px", fontWeight: 600 }}>
-                  Description
+                  {t.products.description}
                 </label>
                 <textarea
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
-                  placeholder="Describe the product, its origin, taste profile..."
+                  placeholder={t.products.descriptionPlaceholder}
                   rows={3}
                   style={{
                     width: "100%",
@@ -364,20 +366,20 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
                     fontSize: "0.9rem",
                     resize: "vertical",
                     boxSizing: "border-box",
-                    fontFamily: "'Lato', sans-serif",
+                    fontFamily,
                   }}
                 />
               </div>
 
               <div>
                 <label style={{ display: "block", color: "#2C1A0E", fontSize: "0.85rem", marginBottom: "6px", fontWeight: 600 }}>
-                  Price (SP) *
+                  {t.products.price}
                 </label>
                 <input
                   type="number"
                   value={form.price || ""}
                   onChange={(e) => setForm({ ...form, price: Number(e.target.value) })}
-                  placeholder="e.g. 25000"
+                  placeholder={t.products.pricePlaceholder}
                   min={0}
                   style={{
                     width: "100%",
@@ -406,7 +408,7 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
                     fontSize: "0.9rem",
                   }}
                 >
-                  Cancel
+                  {t.products.cancel}
                 </button>
                 <button
                   onClick={handleSubmit}
@@ -423,7 +425,7 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
                     fontSize: "0.9rem",
                   }}
                 >
-                  {editingProduct ? "Save Changes" : "Add Product"}
+                  {editingProduct ? t.products.saveChanges : t.products.addProduct}
                 </button>
               </div>
             </div>

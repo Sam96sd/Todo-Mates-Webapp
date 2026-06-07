@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Plus, Minus, Pencil, Check, X } from "lucide-react";
 import type { Product } from "./ProductsSection";
+import { useLanguage, interpolate } from "../i18n/LanguageContext";
+import { getLocalizedProduct } from "../i18n/translations";
 
 interface BulkTier {
   minQty: number;
@@ -19,6 +21,9 @@ export function BulkCalculator({ products, tiers, onUpdateTiers, isAdmin }: Bulk
   const [qty, setQty] = useState(3);
   const [editingTiers, setEditingTiers] = useState(false);
   const [draftTiers, setDraftTiers] = useState<BulkTier[]>(tiers);
+  const { t, language, isRTL } = useLanguage();
+  const fontFamily = isRTL ? "'Cairo', sans-serif" : "'Lato', sans-serif";
+  const serifFamily = isRTL ? "'Cairo', sans-serif" : "'Playfair Display', serif";
 
   const product = products.find((p) => p.id === selectedProduct);
 
@@ -66,25 +71,24 @@ export function BulkCalculator({ products, tiers, onUpdateTiers, isAdmin }: Bulk
       id="bulk"
       style={{
         backgroundColor: "#2D5016",
-        fontFamily: "'Lato', sans-serif",
+        fontFamily,
         padding: "80px 0",
       }}
     >
       <div className="max-w-6xl mx-auto px-6">
         <div className="mb-10">
           <p style={{ color: "#c5e87a", fontSize: "0.8rem", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: "4px" }}>
-            Save More Together
+            {t.bulk.subtitle}
           </p>
-          <h2 style={{ fontFamily: "'Playfair Display', serif", color: "#F4ECD8", fontSize: "2rem", fontWeight: 700 }}>
-            Bulk Purchase Discount
+          <h2 style={{ fontFamily: serifFamily, color: "#F4ECD8", fontSize: "2rem", fontWeight: 700 }}>
+            {t.bulk.title}
           </h2>
           <p style={{ color: "rgba(244,236,216,0.7)", marginTop: "8px", fontSize: "0.92rem" }}>
-            Our prices are fixed — the only way to get a lower price is by ordering in bulk (3+ pieces).
+            {t.bulk.description}
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-10">
-          {/* Calculator */}
           <div
             style={{
               backgroundColor: "rgba(244,236,216,0.08)",
@@ -94,13 +98,13 @@ export function BulkCalculator({ products, tiers, onUpdateTiers, isAdmin }: Bulk
             }}
           >
             <h3 style={{ color: "#F4ECD8", fontSize: "1.05rem", fontWeight: 700, marginBottom: "20px" }}>
-              Price Calculator
+              {t.bulk.calculator}
             </h3>
 
             <div className="flex flex-col gap-4">
               <div>
                 <label style={{ color: "rgba(244,236,216,0.75)", fontSize: "0.82rem", display: "block", marginBottom: "6px" }}>
-                  Select Product
+                  {t.bulk.selectProduct}
                 </label>
                 <select
                   value={selectedProduct}
@@ -115,18 +119,21 @@ export function BulkCalculator({ products, tiers, onUpdateTiers, isAdmin }: Bulk
                     fontSize: "0.9rem",
                   }}
                 >
-                  <option value="" style={{ backgroundColor: "#2D5016" }}>-- Choose a product --</option>
-                  {products.map((p) => (
-                    <option key={p.id} value={p.id} style={{ backgroundColor: "#2D5016" }}>
-                      {p.name} — {p.price.toLocaleString()} SP
-                    </option>
-                  ))}
+                  <option value="" style={{ backgroundColor: "#2D5016" }}>{t.bulk.chooseProduct}</option>
+                  {products.map((p) => {
+                    const localized = getLocalizedProduct(p.id, p.name, p.description, language);
+                    return (
+                      <option key={p.id} value={p.id} style={{ backgroundColor: "#2D5016" }}>
+                        {localized.name} — {p.price.toLocaleString()} SP
+                      </option>
+                    );
+                  })}
                 </select>
               </div>
 
               <div>
                 <label style={{ color: "rgba(244,236,216,0.75)", fontSize: "0.82rem", display: "block", marginBottom: "6px" }}>
-                  Quantity
+                  {t.bulk.quantity}
                 </label>
                 <div className="flex items-center gap-3">
                   <button
@@ -179,11 +186,10 @@ export function BulkCalculator({ products, tiers, onUpdateTiers, isAdmin }: Bulk
                   >
                     <Plus size={14} />
                   </button>
-                  <span style={{ color: "rgba(244,236,216,0.6)", fontSize: "0.85rem" }}>pieces</span>
+                  <span style={{ color: "rgba(244,236,216,0.6)", fontSize: "0.85rem" }}>{t.bulk.pieces}</span>
                 </div>
               </div>
 
-              {/* Result */}
               {product && (
                 <div
                   style={{
@@ -195,16 +201,20 @@ export function BulkCalculator({ products, tiers, onUpdateTiers, isAdmin }: Bulk
                   }}
                 >
                   <div className="flex justify-between mb-2">
-                    <span style={{ color: "rgba(244,236,216,0.7)", fontSize: "0.85rem" }}>Unit Price</span>
+                    <span style={{ color: "rgba(244,236,216,0.7)", fontSize: "0.85rem" }}>{t.bulk.unitPrice}</span>
                     <span style={{ color: "#F4ECD8" }}>{unitPrice.toLocaleString()} SP</span>
                   </div>
                   <div className="flex justify-between mb-2">
-                    <span style={{ color: "rgba(244,236,216,0.7)", fontSize: "0.85rem" }}>Subtotal ({qty} pcs)</span>
+                    <span style={{ color: "rgba(244,236,216,0.7)", fontSize: "0.85rem" }}>
+                      {interpolate(t.bulk.subtotal, { qty })}
+                    </span>
                     <span style={{ color: "#F4ECD8" }}>{total.toLocaleString()} SP</span>
                   </div>
                   {discountPct > 0 && (
                     <div className="flex justify-between mb-2">
-                      <span style={{ color: "#c5e87a", fontSize: "0.85rem" }}>Bulk Discount ({discountPct}%)</span>
+                      <span style={{ color: "#c5e87a", fontSize: "0.85rem" }}>
+                        {interpolate(t.bulk.bulkDiscount, { pct: discountPct })}
+                      </span>
                       <span style={{ color: "#c5e87a" }}>− {savings.toLocaleString()} SP</span>
                     </div>
                   )}
@@ -217,10 +227,10 @@ export function BulkCalculator({ products, tiers, onUpdateTiers, isAdmin }: Bulk
                       justifyContent: "space-between",
                     }}
                   >
-                    <span style={{ color: "#F4ECD8", fontWeight: 700 }}>Total</span>
+                    <span style={{ color: "#F4ECD8", fontWeight: 700 }}>{t.bulk.total}</span>
                     <span
                       style={{
-                        fontFamily: "'Playfair Display', serif",
+                        fontFamily: serifFamily,
                         fontSize: "1.25rem",
                         color: discountPct > 0 ? "#c5e87a" : "#F4ECD8",
                         fontWeight: 700,
@@ -231,7 +241,7 @@ export function BulkCalculator({ products, tiers, onUpdateTiers, isAdmin }: Bulk
                   </div>
                   {discountPct === 0 && qty < 3 && (
                     <p style={{ color: "rgba(244,236,216,0.5)", fontSize: "0.78rem", marginTop: "8px" }}>
-                      Order 3+ pieces to unlock bulk discounts
+                      {t.bulk.unlockDiscount}
                     </p>
                   )}
                 </div>
@@ -239,10 +249,9 @@ export function BulkCalculator({ products, tiers, onUpdateTiers, isAdmin }: Bulk
             </div>
           </div>
 
-          {/* Discount tiers */}
           <div>
             <div className="flex items-center justify-between mb-5">
-              <h3 style={{ color: "#F4ECD8", fontSize: "1.05rem", fontWeight: 700 }}>Discount Tiers</h3>
+              <h3 style={{ color: "#F4ECD8", fontSize: "1.05rem", fontWeight: 700 }}>{t.bulk.discountTiers}</h3>
               {isAdmin && !editingTiers && (
                 <button
                   onClick={() => { setDraftTiers([...tiers]); setEditingTiers(true); }}
@@ -259,16 +268,16 @@ export function BulkCalculator({ products, tiers, onUpdateTiers, isAdmin }: Bulk
                     cursor: "pointer",
                   }}
                 >
-                  <Pencil size={12} /> Edit Tiers
+                  <Pencil size={12} /> {t.bulk.editTiers}
                 </button>
               )}
             </div>
 
             {!editingTiers ? (
               <div className="flex flex-col gap-3">
-                {sortedTiers.map((t) => (
+                {sortedTiers.map((tier) => (
                   <div
-                    key={t.minQty}
+                    key={tier.minQty}
                     style={{
                       display: "flex",
                       alignItems: "center",
@@ -280,8 +289,10 @@ export function BulkCalculator({ products, tiers, onUpdateTiers, isAdmin }: Bulk
                     }}
                   >
                     <div>
-                      <p style={{ color: "#F4ECD8", fontWeight: 700 }}>{t.minQty}+ pieces</p>
-                      <p style={{ color: "rgba(244,236,216,0.55)", fontSize: "0.8rem" }}>Minimum order quantity</p>
+                      <p style={{ color: "#F4ECD8", fontWeight: 700 }}>
+                        {interpolate(t.bulk.piecesMin, { qty: tier.minQty })}
+                      </p>
+                      <p style={{ color: "rgba(244,236,216,0.55)", fontSize: "0.8rem" }}>{t.bulk.minOrderQty}</p>
                     </div>
                     <div
                       style={{
@@ -294,20 +305,19 @@ export function BulkCalculator({ products, tiers, onUpdateTiers, isAdmin }: Bulk
                         fontSize: "1rem",
                       }}
                     >
-                      {t.discountPct}% off
+                      {interpolate(t.bulk.off, { pct: tier.discountPct })}
                     </div>
                   </div>
                 ))}
                 {sortedTiers.length === 0 && (
                   <p style={{ color: "rgba(244,236,216,0.5)", fontSize: "0.9rem" }}>
-                    No discount tiers configured yet.{isAdmin ? " Click Edit Tiers to add some." : ""}
+                    {t.bulk.noTiers}{isAdmin ? t.bulk.noTiersAdmin : ""}
                   </p>
                 )}
               </div>
             ) : (
-              /* Edit mode */
               <div className="flex flex-col gap-3">
-                {draftTiers.map((t, idx) => (
+                {draftTiers.map((tier, idx) => (
                   <div
                     key={idx}
                     style={{
@@ -323,7 +333,7 @@ export function BulkCalculator({ products, tiers, onUpdateTiers, isAdmin }: Bulk
                     <div className="flex items-center gap-2 flex-1">
                       <input
                         type="number"
-                        value={t.minQty}
+                        value={tier.minQty}
                         min={3}
                         onChange={(e) => updateDraftTier(idx, "minQty", Number(e.target.value))}
                         style={{
@@ -337,10 +347,10 @@ export function BulkCalculator({ products, tiers, onUpdateTiers, isAdmin }: Bulk
                           textAlign: "center",
                         }}
                       />
-                      <span style={{ color: "rgba(244,236,216,0.6)", fontSize: "0.82rem" }}>pieces →</span>
+                      <span style={{ color: "rgba(244,236,216,0.6)", fontSize: "0.82rem" }}>{t.bulk.piecesArrow}</span>
                       <input
                         type="number"
-                        value={t.discountPct}
+                        value={tier.discountPct}
                         min={1}
                         max={100}
                         onChange={(e) => updateDraftTier(idx, "discountPct", Number(e.target.value))}
@@ -355,7 +365,7 @@ export function BulkCalculator({ products, tiers, onUpdateTiers, isAdmin }: Bulk
                           textAlign: "center",
                         }}
                       />
-                      <span style={{ color: "#c5e87a", fontSize: "0.82rem" }}>% off</span>
+                      <span style={{ color: "#c5e87a", fontSize: "0.82rem" }}>%</span>
                     </div>
                     <button
                       onClick={() => removeDraftTier(idx)}
@@ -381,7 +391,7 @@ export function BulkCalculator({ products, tiers, onUpdateTiers, isAdmin }: Bulk
                     justifyContent: "center",
                   }}
                 >
-                  <Plus size={14} /> Add Tier
+                  <Plus size={14} /> {t.bulk.addTier}
                 </button>
                 <div className="flex gap-3">
                   <button
@@ -397,7 +407,7 @@ export function BulkCalculator({ products, tiers, onUpdateTiers, isAdmin }: Bulk
                       fontSize: "0.85rem",
                     }}
                   >
-                    Cancel
+                    {t.products.cancel}
                   </button>
                   <button
                     onClick={saveTiers}
@@ -417,7 +427,7 @@ export function BulkCalculator({ products, tiers, onUpdateTiers, isAdmin }: Bulk
                       gap: "6px",
                     }}
                   >
-                    <Check size={14} /> Save Tiers
+                    <Check size={14} /> {t.bulk.saveTiers}
                   </button>
                 </div>
               </div>

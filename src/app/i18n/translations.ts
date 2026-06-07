@@ -1,0 +1,389 @@
+export type Language = "en" | "ar";
+
+export const translations = {
+  en: {
+    brand: "Mate Argentin",
+    nav: {
+      home: "Home",
+      products: "Products",
+      bulk: "Bulk Discount",
+      about: "About",
+      faq: "FAQ",
+      admin: "Admin",
+      exitAdmin: "Exit Admin",
+      exitAdminMobile: "Exit Admin Mode",
+      adminMobile: "Admin Mode",
+    },
+    hero: {
+      tagline: "Original · Argentina · Authentic",
+      titleLine1: "The Finest Yerba",
+      titleLine2: "Mate",
+      titleLine3: "from Argentina",
+      description:
+        "Premium mate, bombillas, and gourds sourced directly from Argentina. Delivered to your door in Deir Atiyeh, shipped across Syria via Al-Kodmous.",
+      shopNow: "Shop Now",
+      learnMore: "Learn More",
+      pureArgentina: "Pure Argentina",
+    },
+    products: {
+      collection: "Our Collection",
+      title: "Products",
+      all: "All",
+      categories: {
+        mate: "Yerba Mate",
+        bombilla: "Bombilla",
+        gourd: "Gourd / Cup",
+      },
+      addProduct: "Add Product",
+      noProducts: "No products yet.",
+      addFirst: "Add your first product!",
+      edit: "Edit",
+      delete: "Delete",
+      confirm: "Confirm",
+      editProduct: "Edit Product",
+      category: "Category",
+      productName: "Product Name *",
+      productNamePlaceholder: "e.g. Taragüi Mate 500g",
+      description: "Description",
+      descriptionPlaceholder: "Describe the product, its origin, taste profile...",
+      price: "Price (SP) *",
+      pricePlaceholder: "e.g. 25000",
+      cancel: "Cancel",
+      saveChanges: "Save Changes",
+    },
+    bulk: {
+      subtitle: "Save More Together",
+      title: "Bulk Purchase Discount",
+      description: "Our prices are fixed — the only way to get a lower price is by ordering in bulk (3+ pieces).",
+      calculator: "Price Calculator",
+      selectProduct: "Select Product",
+      chooseProduct: "-- Choose a product --",
+      quantity: "Quantity",
+      pieces: "pieces",
+      unitPrice: "Unit Price",
+      subtotal: "Subtotal ({qty} pcs)",
+      bulkDiscount: "Bulk Discount ({pct}%)",
+      total: "Total",
+      unlockDiscount: "Order 3+ pieces to unlock bulk discounts",
+      discountTiers: "Discount Tiers",
+      editTiers: "Edit Tiers",
+      piecesMin: "{qty}+ pieces",
+      minOrderQty: "Minimum order quantity",
+      off: "{pct}% off",
+      noTiers: "No discount tiers configured yet.",
+      noTiersAdmin: " Click Edit Tiers to add some.",
+      piecesArrow: "pieces →",
+      addTier: "Add Tier",
+      saveTiers: "Save Tiers",
+    },
+    about: {
+      subtitle: "Who We Are",
+      titleLine1: "Authentic Argentine",
+      titleLine2: "Mate Culture",
+      paragraph1:
+        "We are passionate about bringing the true Argentine mate experience to Syria. Every product we sell is 100% original, imported directly from Argentina — no copies, no substitutes.",
+      paragraph2:
+        "Our prices are carefully set to reflect the real cost and quality of authentic Argentine products. Prices are strict — the only exception is bulk purchases, where we pass our savings directly to you.",
+      quote:
+        '"We guarantee every single product is original from Argentina. No imitations, no shortcuts — just authentic mate, bombillas, and gourds."',
+      localDelivery: "Local Delivery — Deir Atiyeh",
+      localDeliveryDesc: "We deliver directly to your door anywhere in Deir Atiyeh. Fast, personal, and reliable.",
+      nationwide: "Nationwide Shipping — Al-Kodmous",
+      nationwideDesc:
+        "For orders outside Deir Atiyeh, we ship via Al-Kodmous delivery company to all Syrian cities.",
+      original: "100% Original from Argentina",
+      originalDesc:
+        "Every item is verified original. We import directly to ensure authenticity — no gray-market products.",
+      bulkDiscounts: "Bulk Discounts Available",
+      bulkDiscountsDesc:
+        "While prices are fixed for single items, bulk orders of 3+ pieces enjoy special percentage discounts.",
+    },
+    faq: {
+      subtitle: "Ask Anything",
+      title: "FAQ Assistant",
+      chatHeader: "Mate Argentin — FAQ Assistant",
+      inputPlaceholder: "Type your question...",
+      contactUs: "Contact Us",
+      edit: "Edit",
+      whatsappOnly: "WhatsApp Only",
+      whatsappComingSoon: "WhatsApp coming soon",
+      whatsappAddAdmin: "Add WhatsApp number in edit mode",
+      instagram: "Instagram",
+      instagramComingSoon: "Instagram coming soon",
+      instagramAddAdmin: "Add Instagram handle in edit mode",
+      facebook: "Facebook",
+      facebookComingSoon: "Facebook coming soon",
+      facebookAddAdmin: "Add Facebook page in edit mode",
+      whatsappNumber: "WhatsApp Number",
+      instagramHandle: "Instagram Handle",
+      facebookPage: "Facebook Page",
+      cancel: "Cancel",
+      save: "Save",
+      quickQuestions: "Quick Questions",
+      quickQ1: "How does delivery work?",
+      quickQ2: "Are the products original?",
+      quickQ3: "How do I get a discount?",
+      quickQ4: "What types of products do you sell?",
+      welcome:
+        "Welcome to Mate Argentin! 🧉\n\nAsk me about our products, prices, or delivery and I'll be happy to help.",
+      defaultResponse:
+        "Thanks for your question! 😊\n\nI can help you with:\n• Product information\n• Prices and discounts\n• Delivery and shipping\n• Contacting us\n\nOr reach us directly on WhatsApp!",
+    },
+    footer: {
+      tagline: "Authentic Argentine mate products delivered to your door in Syria. 100% original — no imitations.",
+      delivery: "Delivery",
+      localDelivery: "📍 Local delivery — Deir Atiyeh",
+      nationwide: "🚛 Nationwide — via Al-Kodmous",
+      packaged: "📦 Carefully packaged orders",
+      followUs: "Follow Us",
+      whatsappComingSoon: "💬 WhatsApp — coming soon",
+      instagramComingSoon: "📸 Instagram — coming soon",
+      facebookComingSoon: "👍 Facebook — coming soon",
+      rights: "© {year} Mate Argentin — All rights reserved",
+      original: "🇦🇷 Original Products from Argentina",
+    },
+    admin: {
+      banner: "🔐 ADMIN MODE ACTIVE — You can add, edit, and delete products and settings",
+      passwordPrompt: "Enter admin password:",
+      incorrectPassword: "Incorrect password.",
+    },
+    language: {
+      switchTo: "العربية",
+      current: "EN",
+    },
+  },
+  ar: {
+    brand: "ماتي أرجنتين",
+    nav: {
+      home: "الرئيسية",
+      products: "المنتجات",
+      bulk: "خصم الجملة",
+      about: "من نحن",
+      faq: "الأسئلة",
+      admin: "إدارة",
+      exitAdmin: "خروج",
+      exitAdminMobile: "خروج من وضع الإدارة",
+      adminMobile: "وضع الإدارة",
+    },
+    hero: {
+      tagline: "أصلي · أرجنتين · أصيل",
+      titleLine1: "أفضل يربا",
+      titleLine2: "ماتي",
+      titleLine3: "من الأرجنتين",
+      description:
+        "ماتي وبومبيلا وأكواب ماتي فاخرة مستوردة مباشرة من الأرجنتين. نوصل لباب منزلك في ديرعطية، ونشحن لجميع أنحاء سوريا عبر القدموس.",
+      shopNow: "تسوق الآن",
+      learnMore: "اعرف المزيد",
+      pureArgentina: "أرجنتين خالصة",
+    },
+    products: {
+      collection: "مجموعتنا",
+      title: "المنتجات",
+      all: "الكل",
+      categories: {
+        mate: "يربا ماتي",
+        bombilla: "بومبيلا",
+        gourd: "قرع / كوب",
+      },
+      addProduct: "إضافة منتج",
+      noProducts: "لا توجد منتجات بعد.",
+      addFirst: "أضف منتجك الأول!",
+      edit: "تعديل",
+      delete: "حذف",
+      confirm: "تأكيد",
+      editProduct: "تعديل المنتج",
+      category: "الفئة",
+      productName: "اسم المنتج *",
+      productNamePlaceholder: "مثال: تاراغوي ماتي 500غ",
+      description: "الوصف",
+      descriptionPlaceholder: "صف المنتج وأصله ونكهته...",
+      price: "السعر (ل.س) *",
+      pricePlaceholder: "مثال: 25000",
+      cancel: "إلغاء",
+      saveChanges: "حفظ التغييرات",
+    },
+    bulk: {
+      subtitle: "وفّر أكثر معاً",
+      title: "خصم الشراء بالجملة",
+      description: "أسعارنا ثابتة — الطريقة الوحيدة للحصول على سعر أقل هي الطلب بالجملة (3 قطع فأكثر).",
+      calculator: "حاسبة السعر",
+      selectProduct: "اختر المنتج",
+      chooseProduct: "-- اختر منتجاً --",
+      quantity: "الكمية",
+      pieces: "قطعة",
+      unitPrice: "سعر الوحدة",
+      subtotal: "المجموع الفرعي ({qty} قطعة)",
+      bulkDiscount: "خصم الجملة ({pct}%)",
+      total: "الإجمالي",
+      unlockDiscount: "اطلب 3 قطع فأكثر لفتح خصومات الجملة",
+      discountTiers: "مستويات الخصم",
+      editTiers: "تعديل المستويات",
+      piecesMin: "{qty}+ قطعة",
+      minOrderQty: "الحد الأدنى للطلب",
+      off: "خصم {pct}%",
+      noTiers: "لم يتم إعداد مستويات خصم بعد.",
+      noTiersAdmin: " اضغط تعديل المستويات لإضافة بعضها.",
+      piecesArrow: "قطعة ←",
+      addTier: "إضافة مستوى",
+      saveTiers: "حفظ المستويات",
+    },
+    about: {
+      subtitle: "من نحن",
+      titleLine1: "ثقافة الماتي",
+      titleLine2: "الأرجنتينية الأصيلة",
+      paragraph1:
+        "نحن شغوفون بجلب تجربة الماتي الأرجنتينية الحقيقية إلى سوريا. كل منتج نبيعه أصلي 100%، مستورد مباشرة من الأرجنتين — لا نسخ ولا بدائل.",
+      paragraph2:
+        "أسعارنا محددة بعناية لتعكس التكلفة الحقيقية وجودة المنتجات الأرجنتينية الأصيلة. الأسعار ثابتة — الاستثناء الوحيد هو مشتريات الجملة، حيث نمرر وفوراتنا إليك مباشرة.",
+      quote:
+        '"نضمن أن كل منتج أصلي من الأرجنتين. لا تقليد ولا اختصارات — فقط ماتي وبومبيلا وأكواب أصيلة."',
+      localDelivery: "توصيل محلي — ديرعطية",
+      localDeliveryDesc: "نوصل مباشرة لباب منزلك في أي مكان بديرعطية. سريع وشخصي وموثوق.",
+      nationwide: "شحن على مستوى سوريا — القدموس",
+      nationwideDesc: "للطلبات خارج ديرعطية، نشحن عبر شركة القدموس لجميع المدن السورية.",
+      original: "أصلي 100% من الأرجنتين",
+      originalDesc: "كل منتج موثّق أصلي. نستورد مباشرة لضمان الأصالة — لا منتجات سوق رمادي.",
+      bulkDiscounts: "خصومات الجملة متاحة",
+      bulkDiscountsDesc: "بينما الأسعار ثابتة للقطع الفردية، طلبات الجملة من 3 قطع فأكثر تتمتع بخصومات نسبية خاصة.",
+    },
+    faq: {
+      subtitle: "اسأل أي شيء",
+      title: "مساعد الأسئلة",
+      chatHeader: "ماتي أرجنتين — مساعد الأسئلة",
+      inputPlaceholder: "اكتب سؤالك هنا...",
+      contactUs: "تواصل معنا",
+      edit: "تعديل",
+      whatsappOnly: "واتساب فقط",
+      whatsappComingSoon: "واتساب قريباً",
+      whatsappAddAdmin: "أضف رقم واتساب في وضع التعديل",
+      instagram: "انستغرام",
+      instagramComingSoon: "انستغرام قريباً",
+      instagramAddAdmin: "أضف حساب انستغرام في وضع التعديل",
+      facebook: "فيسبوك",
+      facebookComingSoon: "فيسبوك قريباً",
+      facebookAddAdmin: "أضف صفحة فيسبوك في وضع التعديل",
+      whatsappNumber: "رقم واتساب",
+      instagramHandle: "حساب انستغرام",
+      facebookPage: "صفحة فيسبوك",
+      cancel: "إلغاء",
+      save: "حفظ",
+      quickQuestions: "أسئلة سريعة",
+      quickQ1: "كيف يتم التوصيل؟",
+      quickQ2: "هل المنتجات أصلية؟",
+      quickQ3: "كيف أحصل على خصم؟",
+      quickQ4: "ما أنواع المنتجات؟",
+      welcome:
+        "أهلاً بك في ماتي أرجنتين! 🧉\n\nاسألني عن منتجاتنا، أسعارنا، أو التوصيل وسأساعدك بكل سرور.",
+      defaultResponse:
+        "شكراً لسؤالك! 😊\n\nيمكنني مساعدتك في:\n• معلومات المنتجات\n• الأسعار والخصومات\n• التوصيل والشحن\n• التواصل معنا\n\nأو تواصل معنا مباشرة عبر واتساب!",
+    },
+    footer: {
+      tagline: "منتجات ماتي أرجنتينية أصيلة تصل لباب منزلك في سوريا. أصلي 100% — لا تقليد.",
+      delivery: "التوصيل",
+      localDelivery: "📍 توصيل محلي — ديرعطية",
+      nationwide: "🚛 على مستوى سوريا — عبر القدموس",
+      packaged: "📦 طلبات معبأة بعناية",
+      followUs: "تابعنا",
+      whatsappComingSoon: "💬 واتساب — قريباً",
+      instagramComingSoon: "📸 انستغرام — قريباً",
+      facebookComingSoon: "👍 فيسبوك — قريباً",
+      rights: "© {year} ماتي أرجنتين — جميع الحقوق محفوظة",
+      original: "🇦🇷 منتجات أصلية من الأرجنتين",
+    },
+    admin: {
+      banner: "🔐 وضع الإدارة نشط — يمكنك إضافة وتعديل وحذف المنتجات والإعدادات",
+      passwordPrompt: "أدخل كلمة مرور الإدارة:",
+      incorrectPassword: "كلمة المرور غير صحيحة.",
+    },
+    language: {
+      switchTo: "English",
+      current: "عربي",
+    },
+  },
+} as const;
+
+export type TranslationKeys = typeof translations.en;
+
+export const productTranslations: Record<
+  string,
+  { en: { name: string; description: string }; ar: { name: string; description: string } }
+> = {
+  "1": {
+    en: {
+      name: "Taragüi Mate 500g",
+      description:
+        "Classic Argentine yerba mate with a smooth, balanced flavour. Perfect for beginners and connoisseurs alike.",
+    },
+    ar: {
+      name: "تاراغوي ماتي 500غ",
+      description: "يربا ماتي أرجنتينية كلاسيكية بنكهة متوازنة وناعمة. مثالية للمبتدئين والخبراء على حد سواء.",
+    },
+  },
+  "2": {
+    en: {
+      name: "Cruz de Malta 500g",
+      description: "Traditional strong mate with a rich earthy taste. A staple across Argentina for centuries.",
+    },
+    ar: {
+      name: "كروز دي مالطا 500غ",
+      description: "ماتي تقليدي قوي بنكهة ترابية غنية. أساسي في الأرجنتين منذ قرون.",
+    },
+  },
+  "3": {
+    en: {
+      name: "Alpaca Bombilla",
+      description:
+        "Handcrafted alpaca metal straw with a filter tip, ideal for loose yerba mate. Durable and elegant.",
+    },
+    ar: {
+      name: "بومبيلا ألباكا",
+      description: "ماصّة معدنية مصنوعة يدوياً من ألباكا مع فلتر، مثالية ليربا الماتي. متينة وأنيقة.",
+    },
+  },
+  "4": {
+    en: {
+      name: "Stainless Steel Bombilla",
+      description: "High-quality stainless steel bombilla, easy to clean and long-lasting. A modern take on the classic.",
+    },
+    ar: {
+      name: "بومبيلا ستانلس ستيل",
+      description: "بومبيلا ستانلس ستيل عالية الجودة، سهلة التنظيف وطويلة الأمد. لمسة عصرية على الكلاسيك.",
+    },
+  },
+  "5": {
+    en: {
+      name: "Natural Calabash Gourd",
+      description: "Traditional dried calabash gourd from Argentina. Each piece is unique with its own natural shape.",
+    },
+    ar: {
+      name: "قرع ماتي طبيعي",
+      description: "قرع ماتي تقليدي مجفف من الأرجنتين. كل قطعة فريدة بشكلها الطبيعي الخاص.",
+    },
+  },
+  "6": {
+    en: {
+      name: "Leather-Wrapped Gourd",
+      description:
+        "Calabash gourd with genuine leather wrap and metal base. Premium look and feel, authentic craftsmanship.",
+    },
+    ar: {
+      name: "قرع ماتي بجلد",
+      description: "قرع ماتي ملفوف بجلد أصلي وقاعدة معدنية. مظهر وفخامة، حرفية أصيلة.",
+    },
+  },
+};
+
+export function getLocalizedProduct(
+  id: string,
+  name: string,
+  description: string,
+  lang: Language
+): { name: string; description: string } {
+  const t = productTranslations[id];
+  if (t) return t[lang];
+  return { name, description };
+}
+
+export function interpolate(text: string, vars: Record<string, string | number>): string {
+  return text.replace(/\{(\w+)\}/g, (_, key) => String(vars[key] ?? ""));
+}

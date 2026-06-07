@@ -1,15 +1,21 @@
+import { useLanguage } from "../i18n/LanguageContext";
+
 interface HeroProps {
   onNavigate: (section: string) => void;
 }
 
 export function Hero({ onNavigate }: HeroProps) {
+  const { t, isRTL } = useLanguage();
+  const fontFamily = isRTL ? "'Cairo', sans-serif" : "'Lato', sans-serif";
+  const serifFamily = isRTL ? "'Cairo', sans-serif" : "'Playfair Display', serif";
+
   return (
     <section
       id="home"
       style={{
         backgroundImage:
           "linear-gradient(to bottom right, #1e3a0f 0%, #2D5016 55%, #4a2c10 100%)",
-        fontFamily: "'Lato', sans-serif",
+        fontFamily,
         minHeight: "92vh",
         display: "flex",
         alignItems: "center",
@@ -17,12 +23,11 @@ export function Hero({ onNavigate }: HeroProps) {
         overflow: "hidden",
       }}
     >
-      {/* decorative circles */}
       <div
         style={{
           position: "absolute",
           top: "-80px",
-          right: "-80px",
+          [isRTL ? "left" : "right"]: "-80px",
           width: "400px",
           height: "400px",
           borderRadius: "50%",
@@ -34,7 +39,7 @@ export function Hero({ onNavigate }: HeroProps) {
         style={{
           position: "absolute",
           bottom: "-120px",
-          left: "-60px",
+          [isRTL ? "right" : "left"]: "-60px",
           width: "360px",
           height: "360px",
           borderRadius: "50%",
@@ -44,7 +49,6 @@ export function Hero({ onNavigate }: HeroProps) {
       />
 
       <div className="max-w-6xl mx-auto px-6 w-full grid md:grid-cols-2 gap-12 items-center py-20">
-        {/* Text side */}
         <div>
           <p
             style={{
@@ -55,11 +59,11 @@ export function Hero({ onNavigate }: HeroProps) {
               marginBottom: "1rem",
             }}
           >
-            Original · Argentina · Authentic
+            {t.hero.tagline}
           </p>
           <h1
             style={{
-              fontFamily: "'Playfair Display', serif",
+              fontFamily: serifFamily,
               color: "#F4ECD8",
               fontSize: "clamp(2.4rem, 6vw, 4rem)",
               fontWeight: 700,
@@ -67,8 +71,9 @@ export function Hero({ onNavigate }: HeroProps) {
               marginBottom: "1.25rem",
             }}
           >
-            The Finest Yerba<br />
-            <em style={{ color: "#c5e87a" }}>Mate</em> from Argentina
+            {t.hero.titleLine1}
+            <br />
+            <em style={{ color: "#c5e87a" }}>{t.hero.titleLine2}</em> {t.hero.titleLine3}
           </h1>
           <p
             style={{
@@ -79,8 +84,7 @@ export function Hero({ onNavigate }: HeroProps) {
               marginBottom: "2rem",
             }}
           >
-            Premium mate, bombillas, and gourds sourced directly from Argentina.
-            Delivered to your door in Deir Atiyeh, shipped across Syria via Al-Kodmous.
+            {t.hero.description}
           </p>
           <div className="flex flex-wrap gap-4">
             <button
@@ -103,7 +107,7 @@ export function Hero({ onNavigate }: HeroProps) {
               onMouseOver={(e) => ((e.target as HTMLElement).style.opacity = "0.85")}
               onMouseOut={(e) => ((e.target as HTMLElement).style.opacity = "1")}
             >
-              Shop Now
+              {t.hero.shopNow}
             </button>
             <button
               onClick={() => {
@@ -122,12 +126,11 @@ export function Hero({ onNavigate }: HeroProps) {
                 transition: "border-color 0.2s",
               }}
             >
-              Learn More
+              {t.hero.learnMore}
             </button>
           </div>
         </div>
 
-        {/* Visual side */}
         <div className="hidden md:flex justify-center">
           <div
             style={{
@@ -152,7 +155,7 @@ export function Hero({ onNavigate }: HeroProps) {
                 textTransform: "uppercase",
               }}
             >
-              Pure Argentina
+              {t.hero.pureArgentina}
             </p>
           </div>
         </div>

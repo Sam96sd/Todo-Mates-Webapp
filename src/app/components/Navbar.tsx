@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Menu, X, Leaf } from "lucide-react";
+import { useLanguage } from "../i18n/LanguageContext";
+import { LanguageToggle } from "./LanguageToggle";
 
 interface NavbarProps {
   activeSection: string;
@@ -10,13 +12,14 @@ interface NavbarProps {
 
 export function Navbar({ activeSection, onNavigate, isAdmin, onToggleAdmin }: NavbarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { t, isRTL } = useLanguage();
 
   const links = [
-    { id: "home", label: "Home" },
-    { id: "products", label: "Products" },
-    { id: "bulk", label: "Bulk Discount" },
-    { id: "about", label: "About" },
-    { id: "faq", label: "FAQ" },
+    { id: "home", label: t.nav.home },
+    { id: "products", label: t.nav.products },
+    { id: "bulk", label: t.nav.bulk },
+    { id: "about", label: t.nav.about },
+    { id: "faq", label: t.nav.faq },
   ];
 
   const handleNav = (id: string) => {
@@ -26,13 +29,15 @@ export function Navbar({ activeSection, onNavigate, isAdmin, onToggleAdmin }: Na
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
+  const fontFamily = isRTL ? "'Cairo', sans-serif" : "'Lato', sans-serif";
+  const serifFamily = isRTL ? "'Cairo', sans-serif" : "'Playfair Display', serif";
+
   return (
     <nav
-      style={{ fontFamily: "'Lato', sans-serif", backgroundColor: "#2D5016", color: "#F4ECD8" }}
+      style={{ fontFamily, backgroundColor: "#2D5016", color: "#F4ECD8" }}
       className="sticky top-0 z-50 shadow-md"
     >
       <div className="max-w-6xl mx-auto px-4 flex items-center justify-between h-16">
-        {/* Logo */}
         <button
           onClick={() => handleNav("home")}
           className="flex items-center gap-2 hover:opacity-80 transition-opacity"
@@ -40,18 +45,17 @@ export function Navbar({ activeSection, onNavigate, isAdmin, onToggleAdmin }: Na
           <Leaf size={22} style={{ color: "#c5e87a" }} />
           <span
             style={{
-              fontFamily: "'Playfair Display', serif",
+              fontFamily: serifFamily,
               fontSize: "1.25rem",
               fontWeight: 700,
               color: "#F4ECD8",
               letterSpacing: "0.03em",
             }}
           >
-            Mate Argentin
+            {t.brand}
           </span>
         </button>
 
-        {/* Desktop links */}
         <div className="hidden md:flex items-center gap-6">
           {links.map((l) => (
             <button
@@ -68,6 +72,7 @@ export function Navbar({ activeSection, onNavigate, isAdmin, onToggleAdmin }: Na
               {l.label}
             </button>
           ))}
+          <LanguageToggle />
           <button
             onClick={onToggleAdmin}
             style={{
@@ -80,21 +85,18 @@ export function Navbar({ activeSection, onNavigate, isAdmin, onToggleAdmin }: Na
               transition: "background-color 0.2s",
             }}
           >
-            {isAdmin ? "Exit Admin" : "Admin"}
+            {isAdmin ? t.nav.exitAdmin : t.nav.admin}
           </button>
         </div>
 
-        {/* Mobile toggle */}
-        <button
-          className="md:hidden"
-          onClick={() => setMobileOpen(!mobileOpen)}
-          style={{ color: "#F4ECD8" }}
-        >
-          {mobileOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+        <div className="md:hidden flex items-center gap-3">
+          <LanguageToggle />
+          <button onClick={() => setMobileOpen(!mobileOpen)} style={{ color: "#F4ECD8" }}>
+            {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
       </div>
 
-      {/* Mobile menu */}
       {mobileOpen && (
         <div style={{ backgroundColor: "#234012", borderTop: "1px solid rgba(245,237,216,0.15)" }}>
           <div className="flex flex-col px-4 py-3 gap-3">
@@ -102,7 +104,7 @@ export function Navbar({ activeSection, onNavigate, isAdmin, onToggleAdmin }: Na
               <button
                 key={l.id}
                 onClick={() => handleNav(l.id)}
-                style={{ color: "#F4ECD8", textAlign: "left" }}
+                style={{ color: "#F4ECD8", textAlign: isRTL ? "right" : "left" }}
                 className="text-sm py-1"
               >
                 {l.label}
@@ -110,10 +112,10 @@ export function Navbar({ activeSection, onNavigate, isAdmin, onToggleAdmin }: Na
             ))}
             <button
               onClick={() => { onToggleAdmin(); setMobileOpen(false); }}
-              style={{ color: "#F4ECD8", textAlign: "left", opacity: 0.7 }}
+              style={{ color: "#F4ECD8", textAlign: isRTL ? "right" : "left", opacity: 0.7 }}
               className="text-sm py-1"
             >
-              {isAdmin ? "Exit Admin Mode" : "Admin Mode"}
+              {isAdmin ? t.nav.exitAdminMobile : t.nav.adminMobile}
             </button>
           </div>
         </div>

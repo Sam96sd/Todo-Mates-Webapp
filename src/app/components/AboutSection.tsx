@@ -1,21 +1,25 @@
 import { ShieldCheck, Truck, MapPin, Star } from "lucide-react";
+import { useLanguage } from "../i18n/LanguageContext";
 
 export function AboutSection() {
+  const { t, isRTL } = useLanguage();
+  const fontFamily = isRTL ? "'Cairo', sans-serif" : "'Lato', sans-serif";
+  const serifFamily = isRTL ? "'Cairo', sans-serif" : "'Playfair Display', serif";
+
   return (
     <section
       id="about"
-      style={{ backgroundColor: "#EDE0C4", fontFamily: "'Lato', sans-serif", padding: "80px 0" }}
+      style={{ backgroundColor: "#EDE0C4", fontFamily, padding: "80px 0" }}
     >
       <div className="max-w-6xl mx-auto px-6">
         <div className="grid md:grid-cols-2 gap-16 items-start">
-          {/* About text */}
           <div>
             <p style={{ color: "#B85C38", fontSize: "0.8rem", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: "4px" }}>
-              Who We Are
+              {t.about.subtitle}
             </p>
             <h2
               style={{
-                fontFamily: "'Playfair Display', serif",
+                fontFamily: serifFamily,
                 color: "#2C1A0E",
                 fontSize: "2rem",
                 fontWeight: 700,
@@ -23,13 +27,15 @@ export function AboutSection() {
                 lineHeight: 1.25,
               }}
             >
-              Authentic Argentine<br />Mate Culture
+              {t.about.titleLine1}
+              <br />
+              {t.about.titleLine2}
             </h2>
             <p style={{ color: "#6B5340", fontSize: "0.95rem", lineHeight: 1.8, marginBottom: "16px" }}>
-              We are passionate about bringing the true Argentine mate experience to Syria. Every product we sell is 100% original, imported directly from Argentina — no copies, no substitutes.
+              {t.about.paragraph1}
             </p>
             <p style={{ color: "#6B5340", fontSize: "0.95rem", lineHeight: 1.8, marginBottom: "16px" }}>
-              Our prices are carefully set to reflect the real cost and quality of authentic Argentine products. <strong style={{ color: "#2C1A0E" }}>Prices are strict</strong> — the only exception is bulk purchases, where we pass our savings directly to you.
+              {t.about.paragraph2}
             </p>
 
             <div
@@ -39,144 +45,54 @@ export function AboutSection() {
                 backgroundColor: "#F4ECD8",
                 border: "1px solid rgba(44,26,14,0.1)",
                 borderRadius: "6px",
-                borderLeft: "3px solid #B85C38",
+                borderLeft: isRTL ? undefined : "3px solid #B85C38",
+                borderRight: isRTL ? "3px solid #B85C38" : undefined,
               }}
             >
               <p style={{ color: "#2C1A0E", fontSize: "0.9rem", lineHeight: 1.7, fontStyle: "italic" }}>
-                "We guarantee every single product is original from Argentina. No imitations, no shortcuts — just authentic mate, bombillas, and gourds."
+                {t.about.quote}
               </p>
             </div>
           </div>
 
-          {/* Delivery & features */}
           <div className="flex flex-col gap-5">
-            <div
-              style={{
-                display: "flex",
-                gap: "16px",
-                padding: "20px",
-                backgroundColor: "#F4ECD8",
-                borderRadius: "8px",
-                border: "1px solid rgba(44,26,14,0.1)",
-              }}
-            >
+            {[
+              { icon: MapPin, color: "#2D5016", iconColor: "#c5e87a", title: t.about.localDelivery, desc: t.about.localDeliveryDesc },
+              { icon: Truck, color: "#8B6914", iconColor: "#F4ECD8", title: t.about.nationwide, desc: t.about.nationwideDesc },
+              { icon: ShieldCheck, color: "#B85C38", iconColor: "#F4ECD8", title: t.about.original, desc: t.about.originalDesc },
+              { icon: Star, color: "#2D5016", iconColor: "#c5e87a", title: t.about.bulkDiscounts, desc: t.about.bulkDiscountsDesc },
+            ].map(({ icon: Icon, color, iconColor, title, desc }) => (
               <div
+                key={title}
                 style={{
-                  width: "44px",
-                  height: "44px",
-                  borderRadius: "50%",
-                  backgroundColor: "#2D5016",
                   display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexShrink: 0,
+                  gap: "16px",
+                  padding: "20px",
+                  backgroundColor: "#F4ECD8",
+                  borderRadius: "8px",
+                  border: "1px solid rgba(44,26,14,0.1)",
                 }}
               >
-                <MapPin size={20} style={{ color: "#c5e87a" }} />
+                <div
+                  style={{
+                    width: "44px",
+                    height: "44px",
+                    borderRadius: "50%",
+                    backgroundColor: color,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                  }}
+                >
+                  <Icon size={20} style={{ color: iconColor }} />
+                </div>
+                <div>
+                  <h4 style={{ color: "#2C1A0E", fontWeight: 700, marginBottom: "4px" }}>{title}</h4>
+                  <p style={{ color: "#6B5340", fontSize: "0.87rem", lineHeight: 1.6 }}>{desc}</p>
+                </div>
               </div>
-              <div>
-                <h4 style={{ color: "#2C1A0E", fontWeight: 700, marginBottom: "4px" }}>Local Delivery — Deir Atiyeh</h4>
-                <p style={{ color: "#6B5340", fontSize: "0.87rem", lineHeight: 1.6 }}>
-                  We deliver directly to your door anywhere in Deir Atiyeh. Fast, personal, and reliable.
-                </p>
-              </div>
-            </div>
-
-            <div
-              style={{
-                display: "flex",
-                gap: "16px",
-                padding: "20px",
-                backgroundColor: "#F4ECD8",
-                borderRadius: "8px",
-                border: "1px solid rgba(44,26,14,0.1)",
-              }}
-            >
-              <div
-                style={{
-                  width: "44px",
-                  height: "44px",
-                  borderRadius: "50%",
-                  backgroundColor: "#8B6914",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexShrink: 0,
-                }}
-              >
-                <Truck size={20} style={{ color: "#F4ECD8" }} />
-              </div>
-              <div>
-                <h4 style={{ color: "#2C1A0E", fontWeight: 700, marginBottom: "4px" }}>Nationwide Shipping — Al-Kodmous</h4>
-                <p style={{ color: "#6B5340", fontSize: "0.87rem", lineHeight: 1.6 }}>
-                  For orders outside Deir Atiyeh, we ship via <strong>Al-Kodmous</strong> delivery company to all Syrian cities.
-                </p>
-              </div>
-            </div>
-
-            <div
-              style={{
-                display: "flex",
-                gap: "16px",
-                padding: "20px",
-                backgroundColor: "#F4ECD8",
-                borderRadius: "8px",
-                border: "1px solid rgba(44,26,14,0.1)",
-              }}
-            >
-              <div
-                style={{
-                  width: "44px",
-                  height: "44px",
-                  borderRadius: "50%",
-                  backgroundColor: "#B85C38",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexShrink: 0,
-                }}
-              >
-                <ShieldCheck size={20} style={{ color: "#F4ECD8" }} />
-              </div>
-              <div>
-                <h4 style={{ color: "#2C1A0E", fontWeight: 700, marginBottom: "4px" }}>100% Original from Argentina</h4>
-                <p style={{ color: "#6B5340", fontSize: "0.87rem", lineHeight: 1.6 }}>
-                  Every item is verified original. We import directly to ensure authenticity — no gray-market products.
-                </p>
-              </div>
-            </div>
-
-            <div
-              style={{
-                display: "flex",
-                gap: "16px",
-                padding: "20px",
-                backgroundColor: "#F4ECD8",
-                borderRadius: "8px",
-                border: "1px solid rgba(44,26,14,0.1)",
-              }}
-            >
-              <div
-                style={{
-                  width: "44px",
-                  height: "44px",
-                  borderRadius: "50%",
-                  backgroundColor: "#2D5016",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexShrink: 0,
-                }}
-              >
-                <Star size={20} style={{ color: "#c5e87a" }} />
-              </div>
-              <div>
-                <h4 style={{ color: "#2C1A0E", fontWeight: 700, marginBottom: "4px" }}>Bulk Discounts Available</h4>
-                <p style={{ color: "#6B5340", fontSize: "0.87rem", lineHeight: 1.6 }}>
-                  While prices are fixed for single items, bulk orders of 3+ pieces enjoy special percentage discounts.
-                </p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>
