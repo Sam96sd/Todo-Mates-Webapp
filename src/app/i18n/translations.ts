@@ -16,8 +16,8 @@ export const translations = {
     },
     hero: {
       tagline: "Original · Argentina · Authentic",
-      titleLine1: "The Finest Yerba",
-      titleLine2: "Mate",
+      titleLine1: "The Finest",
+      titleLine2: "Mate Products",
       titleLine3: "from Argentina",
       description:
         "Premium mate, bombillas, and gourds sourced directly from Argentina. Delivered to your door in Deir Atiyeh, shipped across Syria via Al-Kodmous.",
@@ -153,7 +153,7 @@ export const translations = {
     },
   },
   ar: {
-    brand: "ماتي أرجنتين",
+    brand: "متة أرجنتين",
     nav: {
       home: "الرئيسية",
       products: "المنتجات",
@@ -167,23 +167,23 @@ export const translations = {
     },
     hero: {
       tagline: "أصلي · أرجنتين · أصيل",
-      titleLine1: "أفضل يربا",
-      titleLine2: "ماتي",
+      titleLine1: "أفضل منتجات",
+      titleLine2: "المتة",
       titleLine3: "من الأرجنتين",
       description:
-        "ماتي وبومبيلا وأكواب ماتي فاخرة مستوردة مباشرة من الأرجنتين. نوصل لباب منزلك في ديرعطية، ونشحن لجميع أنحاء سوريا عبر القدموس.",
+        "متة وجوزات ومصاصات فاخرة مستوردة مباشرة من الأرجنتين. نوصل لباب منزلك في ديرعطية، ونشحن لجميع أنحاء سوريا عبر القدموس.",
       shopNow: "تسوق الآن",
       learnMore: "اعرف المزيد",
-      pureArgentina: "أرجنتين خالصة",
+      pureArgentina: "أرجنتينية أصلية",
     },
     products: {
-      collection: "مجموعتنا",
+      collection: "تصفّح",
       title: "المنتجات",
       all: "الكل",
       categories: {
-        mate: "يربا ماتي",
-        bombilla: "بومبيلا",
-        gourd: "قرع / كوب",
+        mate: "المتة",
+        bombilla: "المصاصات",
+        gourd: "الجوزات والأكواب,
       },
       addProduct: "إضافة منتج",
       noProducts: "لا توجد منتجات بعد.",
@@ -194,7 +194,7 @@ export const translations = {
       editProduct: "تعديل المنتج",
       category: "الفئة",
       productName: "اسم المنتج *",
-      productNamePlaceholder: "مثال: تاراغوي ماتي 500غ",
+      productNamePlaceholder: "مثال: تاراغوي متة 500غ",
       description: "الوصف",
       descriptionPlaceholder: "صف المنتج وأصله ونكهته...",
       price: "السعر (ل.س) *",
@@ -203,7 +203,7 @@ export const translations = {
       saveChanges: "حفظ التغييرات",
     },
     bulk: {
-      subtitle: "وفّر أكثر معاً",
+      subtitle: "احصل على الخصومات",
       title: "خصم الشراء بالجملة",
       description: "أسعارنا ثابتة — الطريقة الوحيدة للحصول على سعر أقل هي الطلب بالجملة (3 قطع فأكثر).",
       calculator: "حاسبة السعر",
@@ -229,27 +229,27 @@ export const translations = {
     },
     about: {
       subtitle: "من نحن",
-      titleLine1: "ثقافة الماتي",
+      titleLine1: "ثقافة المتة",
       titleLine2: "الأرجنتينية الأصيلة",
       paragraph1:
-        "نحن شغوفون بجلب تجربة الماتي الأرجنتينية الحقيقية إلى سوريا. كل منتج نبيعه أصلي 100%، مستورد مباشرة من الأرجنتين — لا نسخ ولا بدائل.",
+        "نحن شغوفون بجلب تجربة المتة الأرجنتينية الحقيقية إلى سوريا. كل منتج نبيعه أصلي 100%، مستورد مباشرة من الأرجنتين — لا تقليد ولا بدائل.",
       paragraph2:
-        "أسعارنا محددة بعناية لتعكس التكلفة الحقيقية وجودة المنتجات الأرجنتينية الأصيلة. الأسعار ثابتة — الاستثناء الوحيد هو مشتريات الجملة، حيث نمرر وفوراتنا إليك مباشرة.",
+        "أسعارنا محددة بعناية لتعكس التكلفة الحقيقية وجودة المنتجات الأرجنتينية الأصيلة. الأسعار ثابتة — الاستثناء الوحيد هو مشتريات الجملة.",
       quote:
-        '"نضمن أن كل منتج أصلي من الأرجنتين. لا تقليد ولا اختصارات — فقط ماتي وبومبيلا وأكواب أصيلة."',
+        '"نضمن أن كل منتج أصلي من الأرجنتين. بدون تقليد — فقط متة ومصاصات وجوزات أصلية."',
       localDelivery: "توصيل محلي — ديرعطية",
-      localDeliveryDesc: "نوصل مباشرة لباب منزلك في أي مكان بديرعطية. سريع وشخصي وموثوق.",
+      localDeliveryDesc: "نوصل مأجور مباشرة لباب منزلك في أي مكان بديرعطية. شخصي وموثوق بتكلفة 100 ليرة سورية جديدة/ 10 آلاف قديمة.",
       nationwide: "شحن على مستوى سوريا — القدموس",
-      nationwideDesc: "للطلبات خارج ديرعطية، نشحن عبر شركة القدموس لجميع المدن السورية.",
+      nationwideDesc: "للطلبات خارج ديرعطية، نشحن عبر شركة القدموس لجميع المحافظات السورية.",
       original: "أصلي 100% من الأرجنتين",
-      originalDesc: "كل منتج موثّق أصلي. نستورد مباشرة لضمان الأصالة — لا منتجات سوق رمادي.",
+      originalDesc: "كل منتج موثّق أصلي. نستورد مباشرة لضمان الأصالة — لا منتجات سوق مقلدة.",
       bulkDiscounts: "خصومات الجملة متاحة",
       bulkDiscountsDesc: "بينما الأسعار ثابتة للقطع الفردية، طلبات الجملة من 3 قطع فأكثر تتمتع بخصومات نسبية خاصة.",
     },
     faq: {
       subtitle: "اسأل أي شيء",
       title: "مساعد الأسئلة",
-      chatHeader: "ماتي أرجنتين — مساعد الأسئلة",
+      chatHeader: "المساعد الذكي سام",
       inputPlaceholder: "اكتب سؤالك هنا...",
       contactUs: "تواصل معنا",
       edit: "تعديل",
@@ -273,12 +273,12 @@ export const translations = {
       quickQ3: "كيف أحصل على خصم؟",
       quickQ4: "ما أنواع المنتجات؟",
       welcome:
-        "أهلاً بك في ماتي أرجنتين! 🧉\n\nاسألني عن منتجاتنا، أسعارنا، أو التوصيل وسأساعدك بكل سرور.",
+        "أهلاً بك في تودو متة! 🧉\n\nاسألني عن منتجاتنا، أسعارنا، أو التوصيل وسأساعدك بكل سرور.",
       defaultResponse:
         "شكراً لسؤالك! 😊\n\nيمكنني مساعدتك في:\n• معلومات المنتجات\n• الأسعار والخصومات\n• التوصيل والشحن\n• التواصل معنا\n\nأو تواصل معنا مباشرة عبر واتساب!",
     },
     footer: {
-      tagline: "منتجات ماتي أرجنتينية أصيلة تصل لباب منزلك في سوريا. أصلي 100% — لا تقليد.",
+      tagline: "منتجات متة أرجنتينية أصيلة تصل لباب منزلك في سوريا. أصلي 100% — لا تقليد.",
       delivery: "التوصيل",
       localDelivery: "📍 توصيل محلي — ديرعطية",
       nationwide: "🚛 على مستوى سوريا — عبر القدموس",
@@ -287,7 +287,7 @@ export const translations = {
       whatsappComingSoon: "💬 واتساب — قريباً",
       instagramComingSoon: "📸 انستغرام — قريباً",
       facebookComingSoon: "👍 فيسبوك — قريباً",
-      rights: "© {year} ماتي أرجنتين — جميع الحقوق محفوظة",
+      rights: "© {year} متة أرجنتين — جميع الحقوق محفوظة",
       original: "🇦🇷 منتجات أصلية من الأرجنتين",
     },
     admin: {
@@ -315,8 +315,8 @@ export const productTranslations: Record<
         "Classic Argentine yerba mate with a smooth, balanced flavour. Perfect for beginners and connoisseurs alike.",
     },
     ar: {
-      name: "تاراغوي ماتي 500غ",
-      description: "يربا ماتي أرجنتينية كلاسيكية بنكهة متوازنة وناعمة. مثالية للمبتدئين والخبراء على حد سواء.",
+      name: "تاراغوي متة 500غ",
+      description: "يربا متة أرجنتينية كلاسيكية بنكهة متوازنة وناعمة. مثالية للمبتدئين والخبراء على حد سواء.",
     },
   },
   "2": {
@@ -326,7 +326,7 @@ export const productTranslations: Record<
     },
     ar: {
       name: "كروز دي مالطا 500غ",
-      description: "ماتي تقليدي قوي بنكهة ترابية غنية. أساسي في الأرجنتين منذ قرون.",
+      description: "متة تقليدي قوي بنكهة ترابية غنية. أساسي في الأرجنتين منذ قرون.",
     },
   },
   "3": {
@@ -336,8 +336,8 @@ export const productTranslations: Record<
         "Handcrafted alpaca metal straw with a filter tip, ideal for loose yerba mate. Durable and elegant.",
     },
     ar: {
-      name: "بومبيلا ألباكا",
-      description: "ماصّة معدنية مصنوعة يدوياً من ألباكا مع فلتر، مثالية ليربا الماتي. متينة وأنيقة.",
+      name: "مصاصات ألباكا",
+      description: "ماصّة معدنية مصنوعة يدوياً من ألباكا مع فلتر، مثالية ليربا المتة. متينة وأنيقة.",
     },
   },
   "4": {
@@ -346,8 +346,8 @@ export const productTranslations: Record<
       description: "High-quality stainless steel bombilla, easy to clean and long-lasting. A modern take on the classic.",
     },
     ar: {
-      name: "بومبيلا ستانلس ستيل",
-      description: "بومبيلا ستانلس ستيل عالية الجودة، سهلة التنظيف وطويلة الأمد. لمسة عصرية على الكلاسيك.",
+      name: "مصاصات ستانلس ستيل",
+      description: "مصاصات ستانلس ستيل عالية الجودة، سهلة التنظيف وطويلة الأمد. لمسة عصرية على الكلاسيك.",
     },
   },
   "5": {
@@ -356,8 +356,8 @@ export const productTranslations: Record<
       description: "Traditional dried calabash gourd from Argentina. Each piece is unique with its own natural shape.",
     },
     ar: {
-      name: "قرع ماتي طبيعي",
-      description: "قرع ماتي تقليدي مجفف من الأرجنتين. كل قطعة فريدة بشكلها الطبيعي الخاص.",
+      name: "قرع متة طبيعي",
+      description: "قرع متة تقليدي مجفف من الأرجنتين. كل قطعة فريدة بشكلها الطبيعي الخاص.",
     },
   },
   "6": {
@@ -367,8 +367,8 @@ export const productTranslations: Record<
         "Calabash gourd with genuine leather wrap and metal base. Premium look and feel, authentic craftsmanship.",
     },
     ar: {
-      name: "قرع ماتي بجلد",
-      description: "قرع ماتي ملفوف بجلد أصلي وقاعدة معدنية. مظهر وفخامة، حرفية أصيلة.",
+      name: "قرع متة بجلد",
+      description: "قرع متة ملفوف بجلد أصلي وقاعدة معدنية. مظهر وفخامة، حرفية أصيلة.",
     },
   },
 };

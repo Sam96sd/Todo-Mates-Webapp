@@ -41,12 +41,12 @@ const FAQ_RESPONSES: Record<Language, Array<{ keywords: string[]; answer: string
     {
       keywords: ["original", "أصلي", "اصلي", "منتج", "product", "argentina", "أرجنتين", "جودة", "quality"],
       answer:
-        "نعم! جميع منتجاتنا 100% أصلية من الأرجنتين 🇦🇷✨\n\nنستورد مباشرة لضمان الأصالة — لا منتجات مقلدة أو بديلة.\n\nنبيع:\n🌿 يربا ماتي\n🥤 بومبيلا (ماصّة ماتي)\n🫙 قرع ماتي (كوب)",
+        "نعم! جميع منتجاتنا 100% أصلية من الأرجنتين 🇦🇷✨\n\nنستورد مباشرة لضمان الأصالة — لا منتجات مقلدة أو بديلة.\n\nنبيع:\n🌿 يربا متة\n🥤 مصاصات (ماصّة متة)\n🫙 قرع متة (كوب)",
     },
     {
-      keywords: ["ماتي", "mate", "يرباماتي", "yerba", "bombilla", "بومبيلا", "gourd", "قرع", "كوب"],
+      keywords: ["متة", "mate", "يربامتة", "yerba", "bombilla", "مصاصات", "gourd", "قرع", "كوب"],
       answer:
-        "نوفر 3 أنواع من المنتجات:\n\n🌿 **يرباماتي** — أعشاب الماتي المجففة من الأرجنتين\n🥤 **بومبيلا** — ماصّة الماتي المعدنية الأصيلة\n🫙 **قرع الماتي** — أكواب الشرب التقليدية\n\nشاهد منتجاتنا الكاملة في قسم المنتجات!",
+        "نوفر 3 أنواع من المنتجات:\n\n🌿 **يربامتة** — أعشاب المتة المجففة من الأرجنتين\n🥤 **مصاصات** — ماصّة المتة المعدنية الأصيلة\n🫙 **قرع المتة** — أكواب الشرب التقليدية\n\nشاهد منتجاتنا الكاملة في قسم المنتجات!",
     },
     {
       keywords: ["instagram", "انستغرام", "انستجرام", "facebook", "فيسبوك", "social", "وسائل"],
@@ -80,7 +80,7 @@ const FAQ_RESPONSES: Record<Language, Array<{ keywords: string[]; answer: string
         "Yes! All our products are 100% original from Argentina 🇦🇷✨\n\nWe import directly to guarantee authenticity — no copies or substitutes.\n\nWe sell:\n🌿 Yerba Mate\n🥤 Bombilla (mate straw)\n🫙 Mate Gourd (cup)",
     },
     {
-      keywords: ["mate", "yerba", "bombilla", "gourd", "ماتي", "يرباماتي", "بومبيلا", "قرع", "كوب"],
+      keywords: ["mate", "yerba", "bombilla", "gourd", "متة", "يربامتة", "مصاصات", "قرع", "كوب"],
       answer:
         "We offer 3 types of products:\n\n🌿 **Yerba Mate** — dried mate herbs from Argentina\n🥤 **Bombilla** — authentic metal mate straw\n🫙 **Mate Gourd** — traditional drinking cups\n\nSee our full product range in the Products section!",
     },
