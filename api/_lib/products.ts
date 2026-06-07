@@ -8,6 +8,7 @@ export interface ProductRow {
   description_ar: string | null;
   price: number;
   category: "mate" | "bombilla" | "gourd";
+  image_url: string | null;
 }
 
 export function mapProduct(row: ProductRow) {
@@ -19,6 +20,7 @@ export function mapProduct(row: ProductRow) {
     descriptionAr: row.description_ar ?? undefined,
     price: Number(row.price),
     category: row.category,
+    image_url: row.image_url ?? undefined,
   };
 }
 
@@ -38,6 +40,7 @@ export async function createProduct(data: {
   descriptionAr?: string;
   price: number;
   category: string;
+  image_url?: string; //
 }) {
   const { rows } = await sql<ProductRow>`
     INSERT INTO products (name, description, name_ar, description_ar, price, category)
@@ -62,6 +65,7 @@ export async function updateProduct(data: {
   descriptionAr?: string;
   price: number;
   category: string;
+  image_url?: string; //
 }) {
   const { rows } = await sql<ProductRow>`
     UPDATE products
