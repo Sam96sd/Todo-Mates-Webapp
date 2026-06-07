@@ -131,7 +131,7 @@ export function FAQChatbot({ contactInfo, onUpdateContact, isAdmin }: FAQChatbot
   const [input, setInput] = useState("");
   const [editingContact, setEditingContact] = useState(false);
   const [draftContact, setDraftContact] = useState(contactInfo);
-  const endRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMessages([
@@ -144,9 +144,10 @@ export function FAQChatbot({ contactInfo, onUpdateContact, isAdmin }: FAQChatbot
     ]);
   }, [language, t.faq.welcome]);
 
-  useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  const scrollChatToBottom = () => {
+    const el = messagesContainerRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  };
 
   const sendMessage = () => {
     if (!input.trim()) return;
@@ -165,6 +166,7 @@ export function FAQChatbot({ contactInfo, onUpdateContact, isAdmin }: FAQChatbot
     };
     setMessages((prev) => [...prev, userMsg, botMsg]);
     setInput("");
+    requestAnimationFrame(scrollChatToBottom);
   };
 
   const saveContact = () => {
@@ -194,6 +196,7 @@ export function FAQChatbot({ contactInfo, onUpdateContact, isAdmin }: FAQChatbot
     };
     setMessages((prev) => [...prev, userMsg, botMsg]);
     setInput("");
+    requestAnimationFrame(scrollChatToBottom);
   };
 
   return (
@@ -247,6 +250,7 @@ export function FAQChatbot({ contactInfo, onUpdateContact, isAdmin }: FAQChatbot
             </div>
 
             <div
+              ref={messagesContainerRef}
               style={{
                 flex: 1,
                 overflowY: "auto",
@@ -284,7 +288,6 @@ export function FAQChatbot({ contactInfo, onUpdateContact, isAdmin }: FAQChatbot
                   </div>
                 </div>
               ))}
-              <div ref={endRef} />
             </div>
 
             <div
