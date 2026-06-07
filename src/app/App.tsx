@@ -39,6 +39,20 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
 
+  // Admin authentication custom modal states
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authPasswordInput, setAuthPasswordInput] = useState("");
+  const [authError, setAuthError] = useState<string | null>(null);
+  const [isVerifying, setIsVerifying] = useState(false);
+
+  // Auto-restore admin session if token exists
+  useEffect(() => {
+    const cachedToken = sessionStorage.getItem("mate-admin-token");
+    if (cachedToken) {
+      setIsAdmin(true);
+    }
+  }, []);
+
   const loadStoreData = useCallback(async () => {
     setLoadError(null);
     try {
@@ -75,24 +89,37 @@ export default function App() {
     return () => observer.disconnect();
   }, []);
 
-  const handleToggleAdmin = async () => {
+  const handleToggleAdmin = () => {
     if (isAdmin) {
       setIsAdmin(false);
       clearAdminToken();
       return;
     }
-    const pw = window.prompt(t.admin.passwordPrompt);
-    if (!pw) return;
+    setAuthPasswordInput("");
+    setAuthError(null);
+    setIsAuthModalOpen(true);
+  };
+
+  const handleVerifyPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!authPasswordInput) return;
+    setIsVerifying(true);
+    setAuthError(null);
     try {
-      const ok = await verifyAdminPassword(pw);
+      const ok = await verifyAdminPassword(authPasswordInput);
       if (ok) {
-        setAdminToken(pw);
+        setAdminToken(authPasswordInput);
         setIsAdmin(true);
+        setIsAuthModalOpen(false);
+        setAuthPasswordInput("");
       } else {
-        window.alert(t.admin.incorrectPassword);
+        setAuthError(t.admin.incorrectPassword);
       }
-    } catch {
-      window.alert("Could not verify admin password. Is the API running?");
+    } catch (err) {
+      console.error(err);
+      setAuthError("Could not verify admin password. Is the API running?");
+    } finally {
+      setIsVerifying(false);
     }
   };
 
@@ -204,6 +231,127 @@ export default function App() {
       />
 
       <Footer contactInfo={contactInfo} />
+
+      {/* Modern, Accessible, Iframe-friendly Admin Password Modal */}
+      {isAuthModalOpen && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 9999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "rgba(44, 26, 14, 0.6)",
+            backdropFilter: "blur(4px)",
+            padding: "16px",
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "#F4ECD8",
+              borderRadius: "8px",
+              boxShadow: "0 10px 25px -5px rgba(44, 26, 14, 0.3)",
+              width: "100%",
+              maxWidth: "400px",
+              border: "1px solid rgba(44, 26, 14, 0.1)",
+              padding: "24px",
+              direction: isRTL ? "rtl" : "ltr",
+            }}
+          >
+            <h3
+              style={{
+                fontFamily: isRTL ? "'Cairo', sans-serif" : "'Playfair Display', serif",
+                color: "#2C1A0E",
+                fontSize: "1.25rem",
+                fontWeight: 700,
+                marginBottom: "16px",
+              }}
+            >
+              {t.admin.passwordPrompt}
+            </h3>
+
+            <form onSubmit={handleVerifyPassword} className="flex flex-col gap-4">
+              <input
+                type="password"
+                required
+                autoFocus
+                placeholder={isRTL ? "أدخل كلمة المرور..." : "Enter admin password..."}
+                value={authPasswordInput}
+                onChange={(e) => setAuthPasswordInput(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "10px 12px",
+                  borderRadius: "6px",
+                  backgroundColor: "#EDE0C4",
+                  border: "1px solid rgba(44, 26, 14, 0.2)",
+                  color: "#2C1A0E",
+                  fontSize: "1rem",
+                  outline: "none",
+                }}
+              />
+
+              {authError && (
+                <div
+                  style={{
+                    color: "#c0392b",
+                    fontSize: "0.85rem",
+                    fontWeight: 600,
+                    backgroundColor: "rgba(192, 57, 43, 0.1)",
+                    padding: "8px 12px",
+                    borderRadius: "4px",
+                  }}
+                >
+                  {authError}
+                </div>
+              )}
+
+              <div className="flex gap-3 justify-end mt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsAuthModalOpen(false);
+                    setAuthPasswordInput("");
+                    setAuthError(null);
+                  }}
+                  style={{
+                    padding: "8px 16px",
+                    borderRadius: "4px",
+                    border: "1px solid rgba(44, 26, 14, 0.2)",
+                    backgroundColor: "transparent",
+                    color: "#6B5340",
+                    fontSize: "0.9rem",
+                    cursor: "pointer",
+                  }}
+                  className="hover:bg-amber-100 transition-colors"
+                >
+                  {t.products.cancel}
+                </button>
+                <button
+                  type="submit"
+                  disabled={isVerifying}
+                  style={{
+                    padding: "8px 20px",
+                    borderRadius: "4px",
+                    backgroundColor: "#B85C38",
+                    color: "#F4ECD8",
+                    fontSize: "0.9rem",
+                    fontWeight: 600,
+                    border: "none",
+                    cursor: "pointer",
+                  }}
+                  className="hover:brightness-110 disabled:opacity-50 transition-all flex items-center gap-2"
+                >
+                  {isVerifying && (
+                    <span className="w-4 h-4 border-2 border-[#F4ECD8] border-t-transparent rounded-full animate-spin"></span>
+                  )}
+                  {t.products.confirm}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

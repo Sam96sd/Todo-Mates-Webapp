@@ -522,7 +522,7 @@ export function FAQChatbot({ contactInfo, onUpdateContact, isAdmin }: FAQChatbot
                         {label}
                       </label>
                       <input
-                        value={(draftContact as Record<string, string>)[key]}
+                        value={(draftContact as any)[key]}
                         onChange={(e) => setDraftContact({ ...draftContact, [key]: e.target.value })}
                         placeholder={placeholder}
                         style={{

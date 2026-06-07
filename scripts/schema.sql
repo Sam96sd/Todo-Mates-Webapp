@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS products (
   description TEXT NOT NULL DEFAULT '',
   name_ar TEXT,
   description_ar TEXT,
-  price INTEGER NOT NULL CHECK (price > 0),
+  price NUMERIC(10, 2) NOT NULL CHECK (price > 0),
   category TEXT NOT NULL CHECK (category IN ('mate', 'bombilla', 'gourd')),
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()

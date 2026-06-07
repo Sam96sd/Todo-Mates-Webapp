@@ -1,0 +1,11 @@
+{
+  "remoteName": "origin",
+  "projects": [
+    {
+      "id": "prj_ZxSyZeHuCpGPZpW6UxuPl3EiuT2r",
+      "name": "todo-mates-webapp",
+      "directory": ".",
+      "orgId": "team_TGiVvp7kGVbAUW4itbBF1CaL"
+    }
+  ]
+}

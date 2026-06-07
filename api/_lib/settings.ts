@@ -1,4 +1,4 @@
-import { sql } from "@vercel/postgres";
+import { sql } from "../../src/lib/db.js";
 
 export interface ContactInfo {
   whatsapp: string;

@@ -40,7 +40,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     language,
     setLanguage,
     toggleLanguage,
-    t: translations[language],
+    t: translations[language] as any as TranslationKeys,
     isRTL: language === "ar",
   };
 

@@ -30,7 +30,7 @@ const categoryEmoji: Record<Category, string> = {
   gourd: "🫙",
 };
 
-const EMPTY_FORM = { name: "", description: "", price: 0, category: "mate" as Category };
+const EMPTY_FORM = { name: "", description: "", price: 0, category: "mate" as Category, image_url: "" };
 
 export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: ProductsSectionProps) {
   const [filter, setFilter] = useState<Category | "all">("all");
@@ -189,29 +189,31 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
                   }
                 >
                   <div style={{ 
-  height: "120px", 
-  backgroundColor: p.image_url ? "transparent" : "#2D5016", 
-  display: "flex", 
-  alignItems: "center", 
-  justifyContent: "center", 
-  overflow: "hidden"
-}}>
-  {p.image_url ? (
-    <img 
-      src={p.image_url} 
-      alt={localized.name} 
-      style={{
-        width: "100%",
-        height: "100%",
-        objectFit: "cover"
-      }}
-    />
-  ) : (
-    <span style={{ fontSize: "3.5rem" }}>
-      {categoryEmoji[p.category]}
-    </span>
-  )}
-</div>
+                    height: "220px", 
+                    backgroundColor: p.image_url ? "#FFFFFF" : "#2D5016", 
+                    display: "flex", 
+                    alignItems: "center", 
+                    justifyContent: "center", 
+                    overflow: "hidden",
+                    padding: p.image_url ? "12px" : "0",
+                    borderBottom: "1px solid rgba(44, 26, 14, 0.08)"
+                  }}>
+                    {p.image_url ? (
+                      <img 
+                        src={p.image_url} 
+                        alt={localized.name} 
+                        style={{
+                          maxWidth: "100%",
+                          maxHeight: "100%",
+                          objectFit: "contain"
+                        }}
+                      />
+                    ) : (
+                      <span style={{ fontSize: "4.5rem" }}>
+                        {categoryEmoji[p.category]}
+                      </span>
+                    )}
+                  </div>
                   <div style={{ padding: "18px" }}>
                     <div className="flex items-start justify-between gap-2 mb-2">
                       <div>
@@ -246,7 +248,7 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
                           whiteSpace: "nowrap",
                         }}
                       >
-                        {p.price.toLocaleString()} SP
+                        {language === "ar" ? `${p.price.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })} $` : `$${p.price.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`}
                       </p>
                     </div>
                     <p style={{ color: "#6B5340", fontSize: "0.88rem", lineHeight: 1.6 }}>{localized.description}</p>
@@ -316,13 +318,17 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
             style={{
               backgroundColor: "#F4ECD8",
               borderRadius: "10px",
-              padding: "32px",
+              padding: "24px 32px",
               width: "100%",
-              maxWidth: "480px",
-              boxShadow: "0 20px 60px rgba(44,26,14,0.35)",
+              maxWidth: "500px",
+              maxHeight: "90vh",
+              display: "flex",
+              flexDirection: "column",
+              boxShadow: "0 20px 60px rgba(44, 26, 14, 0.35)",
+              boxSizing: "border-box"
             }}
           >
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-4 flex-shrink-0">
               <h3
                 style={{
                   fontFamily: serifFamily,
@@ -338,7 +344,7 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
               </button>
             </div>
 
-            <div className="flex flex-col gap-4">
+            <div style={{ overflowY: "auto", flex: 1, paddingRight: "8px" }} className="flex flex-col gap-4 pr-1">
               <div>
                 <label style={{ display: "block", color: "#2C1A0E", fontSize: "0.85rem", marginBottom: "6px", fontWeight: 600 }}>
                   {t.products.category}
@@ -362,54 +368,55 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
                 </select>
               </div>
 
-              <div style={{ display: "flex", gap: "12px", marginTop: "12px" }}>
-  {/* English Product Name Column */}
-  <div style={{ flex: 1 }}>
-    <label style={{ display: "block", color: "#2C1A0E", fontSize: "0.85rem", marginBottom: "6px", fontWeight: 700 }}>
-      {t.products.productName} *
-    </label>
-    <input
-      value={form.name}
-      onChange={(e) => setForm({ ...form, name: e.target.value })}
-      placeholder={t.products.productNamePlaceholder}
-      style={{
-        width: "100%",
-        padding: "10px 12px",
-        border: "1px solid rgba(44,26,14,0.25)",
-        borderRadius: "4px",
-        backgroundColor: "#EDE0C4",
-        color: "#2C1A0E",
-        fontSize: "0.9rem",
-        boxSizing: "border-box"
-      }}
-    />
-  </div>
+              <div style={{ display: "flex", gap: "12px" }}>
+                {/* English Product Name Column */}
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: "block", color: "#2C1A0E", fontSize: "0.85rem", marginBottom: "6px", fontWeight: 700 }}>
+                    {t.products.productName} *
+                  </label>
+                  <input
+                    value={form.name}
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    placeholder={t.products.productNamePlaceholder}
+                    style={{
+                      width: "100%",
+                      padding: "10px 12px",
+                      border: "1px solid rgba(44,26,14,0.25)",
+                      borderRadius: "4px",
+                      backgroundColor: "#EDE0C4",
+                      color: "#2C1A0E",
+                      fontSize: "0.9rem",
+                      boxSizing: "border-box"
+                    }}
+                  />
+                </div>
 
-  {/* Arabic Product Name Column */}
-  <div style={{ flex: 1 }}>
-    <label style={{ display: "block", color: "#2C1A0E", fontSize: "0.85rem", marginBottom: "6px", fontWeight: 700 }}>
-      اسم المنتج (AR)
-    </label>
-    <input
-      type="text"
-      value={form.nameAr || ''}
-      onChange={(e) => setForm({ ...form, nameAr: e.target.value })}
-      placeholder="...أدخل اسم المنتج باللغة العربية"
-      dir="rtl"
-      style={{
-        width: "100%",
-        padding: "10px 12px",
-        border: "1px solid rgba(44,26,14,0.25)",
-        borderRadius: "4px",
-        backgroundColor: "#EDE0C4",
-        color: "#2C1A0E",
-        fontSize: "0.9rem",
-        boxSizing: "border-box",
-        textAlign: "right"
-      }}
-    />
-  </div>
-</div>
+                {/* Arabic Product Name Column */}
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: "block", color: "#2C1A0E", fontSize: "0.85rem", marginBottom: "6px", fontWeight: 700 }}>
+                    اسم المنتج (AR)
+                  </label>
+                  <input
+                    type="text"
+                    value={form.nameAr || ''}
+                    onChange={(e) => setForm({ ...form, nameAr: e.target.value })}
+                    placeholder="...أدخل اسم المنتج باللغة العربية"
+                    dir="rtl"
+                    style={{
+                      width: "100%",
+                      padding: "10px 12px",
+                      border: "1px solid rgba(44,26,14,0.25)",
+                      borderRadius: "4px",
+                      backgroundColor: "#EDE0C4",
+                      color: "#2C1A0E",
+                      fontSize: "0.9rem",
+                      boxSizing: "border-box",
+                      textAlign: "right"
+                    }}
+                  />
+                </div>
+              </div>
+
               <div>
                 <label style={{ display: "block", color: "#2C1A0E", fontSize: "0.85rem", marginBottom: "6px", fontWeight: 600 }}>
                   {t.products.description}
@@ -433,37 +440,40 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
                   }}
                 />
               </div>
+
               <div>
-  <label style={{ display: "block", color: "#2C1A0E", fontSize: "0.85rem", marginBottom: "6px", fontWeight: 700 }}>
-    الوصف (AR)
-  </label>
-  <textarea
-    value={form.descriptionAr || ''}
-    onChange={(e) => setForm({ ...form, descriptionAr: e.target.value })}
-    placeholder="أدخل وصف المنتج باللغة العربية..."
-    rows={3}
-    dir="rtl"
-    style={{
-      width: "100%",
-      padding: "10px 12px",
-      border: "1px solid rgba(44,26,14,0.25)",
-      borderRadius: "4px",
-      backgroundColor: "#EDE0C4",
-      color: "#2C1A0E",
-      fontSize: "0.9rem",
-      resize: "vertical",
-      boxSizing: "border-box",
-      fontFamily,
-      textAlign: "right"
-    }}
-  />
-</div>
+                <label style={{ display: "block", color: "#2C1A0E", fontSize: "0.85rem", marginBottom: "6px", fontWeight: 700 }}>
+                  الوصف (AR)
+                </label>
+                <textarea
+                  value={form.descriptionAr || ''}
+                  onChange={(e) => setForm({ ...form, descriptionAr: e.target.value })}
+                  placeholder="أدخل وصف المنتج باللغة العربية..."
+                  rows={3}
+                  dir="rtl"
+                  style={{
+                    width: "100%",
+                    padding: "10px 12px",
+                    border: "1px solid rgba(44,26,14,0.25)",
+                    borderRadius: "4px",
+                    backgroundColor: "#EDE0C4",
+                    color: "#2C1A0E",
+                    fontSize: "0.9rem",
+                    resize: "vertical",
+                    boxSizing: "border-box",
+                    fontFamily,
+                    textAlign: "right"
+                  }}
+                />
+              </div>
+
               <div>
                 <label style={{ display: "block", color: "#2C1A0E", fontSize: "0.85rem", marginBottom: "6px", fontWeight: 600 }}>
                   {t.products.price}
                 </label>
                 <input
                   type="number"
+                  step="any"
                   value={form.price || ""}
                   onChange={(e) => setForm({ ...form, price: Number(e.target.value) })}
                   placeholder={t.products.pricePlaceholder}
@@ -480,62 +490,64 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
                   }}
                 />
               </div>
-              <div style={{ marginTop: "12px" }}>
-  <label style={{ display: "block", color: "#2C1A0E", fontSize: "0.85rem", marginBottom: "6px", fontWeight: 700 }}>
-    رابط صورة المنتج (Image URL)
-  </label>
-  <input
-    type="text"
-    value={form.image_url || ''}
-    onChange={(e) => setForm({ ...form, image_url: e.target.value })}
-    placeholder="https://example.com/image.png"
-    style={{
-      width: "100%",
-      padding: "10px 12px",
-      border: "1px solid rgba(44,26,14,0.25)",
-      borderRadius: "4px",
-      backgroundColor: "#EDE0C4",
-      color: "#2C1A0E",
-      fontSize: "0.9rem",
-      boxSizing: "border-box",
-      fontFamily
-    }}
-  />
-</div>
-              <div className="flex gap-3 mt-2">
-                <button
-                  onClick={() => setShowForm(false)}
+
+              <div>
+                <label style={{ display: "block", color: "#2C1A0E", fontSize: "0.85rem", marginBottom: "6px", fontWeight: 700 }}>
+                  رابط صورة المنتج (Image URL)
+                </label>
+                <input
+                  type="text"
+                  value={form.image_url || ''}
+                  onChange={(e) => setForm({ ...form, image_url: e.target.value })}
+                  placeholder="https://example.com/image.png"
                   style={{
-                    flex: 1,
-                    padding: "10px",
+                    width: "100%",
+                    padding: "10px 12px",
                     border: "1px solid rgba(44,26,14,0.25)",
                     borderRadius: "4px",
-                    backgroundColor: "transparent",
-                    color: "#6B5340",
-                    cursor: "pointer",
+                    backgroundColor: "#EDE0C4",
+                    color: "#2C1A0E",
                     fontSize: "0.9rem",
+                    boxSizing: "border-box",
+                    fontFamily
                   }}
-                >
-                  {t.products.cancel}
-                </button>
-                <button
-                  onClick={handleSubmit}
-                  disabled={!form.name.trim() || form.price <= 0 || isSaving}
-                  style={{
-                    flex: 2,
-                    padding: "10px",
-                    backgroundColor: form.name.trim() && form.price > 0 ? "#2D5016" : "#D4C5A0",
-                    color: "#F4ECD8",
-                    border: "none",
-                    borderRadius: "4px",
-                    cursor: form.name.trim() && form.price > 0 ? "pointer" : "not-allowed",
-                    fontWeight: 700,
-                    fontSize: "0.9rem",
-                  }}
-                >
-                  {isSaving ? "…" : editingProduct ? t.products.saveChanges : t.products.addProduct}
-                </button>
+                />
               </div>
+            </div>
+
+            <div className="flex gap-3 mt-4 pt-3 flex-shrink-0" style={{ borderTop: "1px solid rgba(44, 26, 14, 0.12)" }}>
+              <button
+                onClick={() => setShowForm(false)}
+                style={{
+                  flex: 1,
+                  padding: "10px",
+                  border: "1px solid rgba(44,26,14,0.25)",
+                  borderRadius: "4px",
+                  backgroundColor: "transparent",
+                  color: "#6B5340",
+                  cursor: "pointer",
+                  fontSize: "0.9rem",
+                }}
+              >
+                {t.products.cancel}
+              </button>
+              <button
+                onClick={handleSubmit}
+                disabled={!form.name.trim() || form.price <= 0 || isSaving}
+                style={{
+                  flex: 2,
+                  padding: "10px",
+                  backgroundColor: form.name.trim() && form.price > 0 ? "#2D5016" : "#D4C5A0",
+                  color: "#F4ECD8",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: form.name.trim() && form.price > 0 ? "pointer" : "not-allowed",
+                  fontWeight: 700,
+                  fontSize: "0.9rem",
+                }}
+              >
+                {isSaving ? "…" : editingProduct ? t.products.saveChanges : t.products.addProduct}
+              </button>
             </div>
           </div>
         </div>

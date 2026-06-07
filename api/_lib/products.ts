@@ -1,4 +1,4 @@
-import { sql } from "@vercel/postgres";
+import { sql } from "../../src/lib/db.js";
 
 export interface ProductRow {
   id: string;
@@ -26,7 +26,7 @@ export function mapProduct(row: ProductRow) {
 
 export async function listProducts() {
   const { rows } = await sql<ProductRow>`
-    SELECT id, name, description, name_ar, description_ar, price, category
+    SELECT id, name, description, name_ar, description_ar, price, category, image_url
     FROM products
     ORDER BY created_at ASC
   `;
@@ -40,19 +40,20 @@ export async function createProduct(data: {
   descriptionAr?: string;
   price: number;
   category: string;
-  image_url?: string; //
+  image_url?: string;
 }) {
   const { rows } = await sql<ProductRow>`
-    INSERT INTO products (name, description, name_ar, description_ar, price, category)
+    INSERT INTO products (name, description, name_ar, description_ar, price, category, image_url)
     VALUES (
       ${data.name},
       ${data.description},
       ${data.nameAr ?? null},
       ${data.descriptionAr ?? null},
       ${data.price},
-      ${data.category}
+      ${data.category},
+      ${data.image_url ?? null}
     )
-    RETURNING id, name, description, name_ar, description_ar, price, category
+    RETURNING id, name, description, name_ar, description_ar, price, category, image_url
   `;
   return mapProduct(rows[0]);
 }
@@ -65,7 +66,7 @@ export async function updateProduct(data: {
   descriptionAr?: string;
   price: number;
   category: string;
-  image_url?: string; //
+  image_url?: string;
 }) {
   const { rows } = await sql<ProductRow>`
     UPDATE products
@@ -76,9 +77,10 @@ export async function updateProduct(data: {
       description_ar = ${data.descriptionAr ?? null},
       price = ${data.price},
       category = ${data.category},
+      image_url = ${data.image_url ?? null},
       updated_at = NOW()
     WHERE id = ${data.id}::uuid
-    RETURNING id, name, description, name_ar, description_ar, price, category
+    RETURNING id, name, description, name_ar, description_ar, price, category, image_url
   `;
   if (!rows[0]) return null;
   return mapProduct(rows[0]);

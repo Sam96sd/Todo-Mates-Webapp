@@ -1,0 +1,6 @@
+{
+  "name": "Mate Shop Website App",
+  "description": "A multi-lingual web application for a Yerba Mate store with interactive calculators, catalogues, and chats.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

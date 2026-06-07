@@ -132,7 +132,7 @@ export function BulkCalculator({ products, tiers, onUpdateTiers, isAdmin }: Bulk
                     const localized = getLocalizedProduct(p, language);
                     return (
                       <option key={p.id} value={p.id} style={{ backgroundColor: "#2D5016" }}>
-                        {localized.name} — {p.price.toLocaleString()} SP
+                        {localized.name} — {language === "ar" ? `${p.price.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })} $` : `$${p.price.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`}
                       </option>
                     );
                   })}
@@ -210,20 +210,26 @@ export function BulkCalculator({ products, tiers, onUpdateTiers, isAdmin }: Bulk
                 >
                   <div className="flex justify-between mb-2">
                     <span style={{ color: "rgba(244,236,216,0.7)", fontSize: "0.85rem" }}>{t.bulk.unitPrice}</span>
-                    <span style={{ color: "#F4ECD8" }}>{unitPrice.toLocaleString()} SP</span>
+                    <span style={{ color: "#F4ECD8" }}>
+                      {language === "ar" ? `${unitPrice.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })} $` : `$${unitPrice.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`}
+                    </span>
                   </div>
                   <div className="flex justify-between mb-2">
                     <span style={{ color: "rgba(244,236,216,0.7)", fontSize: "0.85rem" }}>
                       {interpolate(t.bulk.subtotal, { qty })}
                     </span>
-                    <span style={{ color: "#F4ECD8" }}>{total.toLocaleString()} SP</span>
+                    <span style={{ color: "#F4ECD8" }}>
+                      {language === "ar" ? `${total.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })} $` : `$${total.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`}
+                    </span>
                   </div>
                   {discountPct > 0 && (
                     <div className="flex justify-between mb-2">
                       <span style={{ color: "#c5e87a", fontSize: "0.85rem" }}>
                         {interpolate(t.bulk.bulkDiscount, { pct: discountPct })}
                       </span>
-                      <span style={{ color: "#c5e87a" }}>− {savings.toLocaleString()} SP</span>
+                      <span style={{ color: "#c5e87a" }}>
+                        − {language === "ar" ? `${savings.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })} $` : `$${savings.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`}
+                      </span>
                     </div>
                   )}
                   <div
@@ -244,7 +250,7 @@ export function BulkCalculator({ products, tiers, onUpdateTiers, isAdmin }: Bulk
                         fontWeight: 700,
                       }}
                     >
-                      {Math.round(discounted).toLocaleString()} SP
+                      {language === "ar" ? `${discounted.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })} $` : `$${discounted.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`}
                     </span>
                   </div>
                   {discountPct === 0 && qty < 3 && (
