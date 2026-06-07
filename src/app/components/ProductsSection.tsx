@@ -395,6 +395,7 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
       }}
     />
   </div>
+</div>
               <div>
                 <label style={{ display: "block", color: "#2C1A0E", fontSize: "0.85rem", marginBottom: "6px", fontWeight: 600 }}>
                   {t.products.description}
