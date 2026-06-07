@@ -86,6 +86,7 @@ export async function createProduct(data: Omit<Product, "id">): Promise<Product>
       descriptionAr: data.descriptionAr,
       price: data.price,
       category: data.category,
+      image_url: data.image_url,
     }),
   });
 }
@@ -102,6 +103,7 @@ export async function updateProduct(data: Product): Promise<Product> {
       descriptionAr: data.descriptionAr,
       price: data.price,
       category: data.category,
+      image_url: data.image_url,
     }),
   });
 }
