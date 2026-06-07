@@ -183,10 +183,10 @@ export const translations = {
       categories: {
         mate: "المتة",
         bombilla: "المصاصات",
-        gourd: "الجوزات والأكواب,
+        gourd: "الجوزات والأكواب"
       },
       addProduct: "إضافة منتج",
-      noProducts: "لا توجد منتجات بعد.",
+      noProducts: "لا توجد منتجات بعد",
       addFirst: "أضف منتجك الأول!",
       edit: "تعديل",
       delete: "حذف",
@@ -196,11 +196,11 @@ export const translations = {
       productName: "اسم المنتج *",
       productNamePlaceholder: "مثال: تاراغوي متة 500غ",
       description: "الوصف",
-      descriptionPlaceholder: "صف المنتج وأصله ونكهته...",
+      descriptionPlaceholder: "...صف المنتج وأصله ونكهته",
       price: "السعر (ل.س) *",
       pricePlaceholder: "مثال: 25000",
       cancel: "إلغاء",
-      saveChanges: "حفظ التغييرات",
+      saveChanges: "حفظ التغييرات"
     },
     bulk: {
       subtitle: "احصل على الخصومات",
