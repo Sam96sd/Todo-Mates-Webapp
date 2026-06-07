@@ -194,7 +194,15 @@ export function FAQChatbot({ contactInfo, onUpdateContact, isAdmin }: FAQChatbot
       text: input.trim(),
       timestamp: new Date(),
     };
-    const botResponse = getBotResponse(input.trim(), language, t.faq.defaultResponse);
+    
+    // Inject the real number into the response if the user asks about WhatsApp
+    let botResponse = getBotResponse(input.trim(), language, t.faq.defaultResponse);
+    if (input.toLowerCase().includes("whatsapp") || input.toLowerCase().includes("واتس")) {
+        botResponse = contactInfo.whatsapp 
+            ? `${t.faq.whatsappOnly} ${contactInfo.whatsapp}` 
+            : botResponse;
+    }
+
     const botMsg: Message = {
       id: (Date.now() + 1).toString(),
       role: "bot",
@@ -205,7 +213,6 @@ export function FAQChatbot({ contactInfo, onUpdateContact, isAdmin }: FAQChatbot
     setInput("");
     requestAnimationFrame(scrollChatToBottom);
   };
-
   const saveContact = async () => {
     setIsSavingContact(true);
     try {
@@ -232,10 +239,18 @@ export function FAQChatbot({ contactInfo, onUpdateContact, isAdmin }: FAQChatbot
 
   const handleQuickQuestion = (q: string) => {
     const userMsg: Message = { id: Date.now().toString(), role: "user", text: q, timestamp: new Date() };
+    
+    let botResponse = getBotResponse(q, language, t.faq.defaultResponse);
+    if (q.toLowerCase().includes("whatsapp") || q.toLowerCase().includes("واتس")) {
+        botResponse = contactInfo.whatsapp 
+            ? `${t.faq.whatsappOnly} ${contactInfo.whatsapp}` 
+            : botResponse;
+    }
+
     const botMsg: Message = {
       id: (Date.now() + 1).toString(),
       role: "bot",
-      text: getBotResponse(q, language, t.faq.defaultResponse),
+      text: botResponse,
       timestamp: new Date(),
     };
     setMessages((prev) => [...prev, userMsg, botMsg]);
