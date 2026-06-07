@@ -57,6 +57,22 @@ const FAQ_RESPONSES: Record<Language, Array<{ keywords: string[]; answer: string
       answer:
         "أهلاً وسهلاً! 👋\n\nأنا هنا للإجابة على أسئلتك حول منتجاتنا، الأسعار، والتوصيل.\n\nكيف أستطيع مساعدتك؟",
     },
+    {
+      keywords: ["محل", "متجر", "ديرعطية", "دير عطية", "عنوان", "مكان", "موقع"],
+      answer: "لا يوجد لدينا محل في ديرعطية حالياً 🏠\nولكن نوفر خدمة توصيل مأجورة داخل ديرعطية بتكلفة **100 ليرة سورية جديدة** (أو 10 آلاف ليرة بالعملة القديمة) لجميع الطلبات!",
+    },
+    {
+      keywords: ["النبك", "نبك", "توصيل للنبك", "شحن للنبك"],
+      answer: "بالنسبة للنبك، لا يتوفر لدينا توصيل مباشر حالياً 🗺️\nولكن في العادة، يقوم زبائننا من النبك بإرسال **موتور (مراسيل)** من طرفهم لاستلام البضاعة وتوصيلها لهم، وتكون تكلفة التوصيل بالكامل على المشتري.",
+    },
+    {
+      keywords: ["مكفولة", "مكفول", "ضمان", "كفالة", "مكسور", "تسريب", "اصلي", "تقليد"],
+      answer: "جميع بضائعنا أصلية ومستوردة من الأرجنتين حصرًا 🇦🇷، ولا نتعامل مع البضائع المقلدة نهائياً.\n\nالقطع جميعها **مكفولة بشرط الاستخدام الصحيح**:\n• نتأكد تماماً قبل التسليم من أن جميع الجوزات غير مكسورة ولا تسرب الماء.\n• نتأكد أن جميع المصاصات لونها ثابت لأنها مصنوعة من معدن الستيل الأصلي.\n\n⚠️ **ملاحظة:** في حال حدوث خطأ في الاستخدام أو التنظيف (خصوصاً استخدام المنظفات القاسية والمواد الكيماوية على المنتجات)، يتحمل المشتري مسؤولية الخطأ.",
+    },
+    {
+      keywords: ["جديد", "جديدة", "بضائع جديدة", "توفر", "امتى", "متى", "تجديد", "شحن"],
+      answer: "عملية الشحن والاستيراد من الأرجنتين معقدة وصعبة ومكلفة للغاية 🚢\nلذلك، نحاول جلب تشكيلة من المنتجات **مرة أو مرتين في السنة كحد أقصى**، وفي بعض الأحيان قد لا نتمكن من التجديد خلال العام نفسه.\n\nبسبب هذا، البضائع المتوفرة لدينا دائمًا نادرة، محدودة الكمية، ولا تتكرر كثيرًا! إذا نال إعجابك منتج، ننصحك بطلبه مباشرة.",
+    },
   ],
   en: [
     {
@@ -92,6 +108,22 @@ const FAQ_RESPONSES: Record<Language, Array<{ keywords: string[]; answer: string
       keywords: ["hello", "hi", "مرحبا", "هلا", "أهلا", "اهلا"],
       answer:
         "Hello and welcome! 👋\n\nI'm here to answer your questions about our products, prices, and delivery.\n\nHow can I help you?",
+    },
+    {
+      keywords: ["shop", "store", "location", "address", "deir atiyeh", "deir", "atiyeh"],
+      answer: "We do not have a physical shop in Deir Atiyeh at the moment 🏠\nHowever, we offer paid delivery within Deir Atiyeh for just **100 new Syrian Pounds** (or 10,000 old Syrian Pounds) directly to your door!",
+    },
+    {
+      keywords: ["an-nabk", "nabk", "nabek", "delivery to nabk"],
+      answer: "For An-Nabk, we do not have a direct delivery route 🗺️\nUsually, our customers from An-Nabk send a **private motorcycle courier (Merasil)** from their side to pick up the products and deliver them, with the delivery fee covered by the buyer.",
+    },
+    {
+      keywords: ["guaranteed", "warranty", "original", "fake", "authentic", "leak", "broken"],
+      answer: "All our products are 100% authentic and imported strictly from Argentina 🇦🇷. We never deal with counterfeit items.\n\nAll items are **guaranteed provided they are used correctly**:\n• We inspect all gourds thoroughly to ensure they are not cracked and do not leak.\n• We guarantee that all bombillas (straws) are made of genuine stainless steel with non-fading colors.\n\n⚠️ **Please note:** Damage caused by improper handling, usage, or cleaning (especially using harsh chemical detergents on the products) is the sole responsibility of the buyer.",
+    },
+    {
+      keywords: ["new", "stock", "restock", "when", "arrival", "cargo", "shipment"],
+      answer: "Shipping and importing cargo directly from Argentina is extremely difficult and highly expensive 🚢\nBecause of this, we only manage to bring in new stock **once or twice a year at most**, and sometimes we cannot restock at all within the same year.\n\nTherefore, our available items are highly rare, limited in quantity, and rarely repeated!",
     },
   ],
 };
