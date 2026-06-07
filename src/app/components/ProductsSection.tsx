@@ -472,8 +472,8 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
   </label>
   <input
     type="text"
-    value={form.imageUrl || ''}
-    onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
+    value={form.image_url || ''}
+    onChange={(e) => setForm({ ...form, image_url: e.target.value })}
     placeholder="https://example.com/image.png"
     style={{
       width: "100%",
