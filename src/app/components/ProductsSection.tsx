@@ -462,7 +462,28 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
                   }}
                 />
               </div>
-
+              <div style={{ marginTop: "12px" }}>
+  <label style={{ display: "block", color: "#2C1A0E", fontSize: "0.85rem", marginBottom: "6px", fontWeight: 700 }}>
+    رابط صورة المنتج (Image URL)
+  </label>
+  <input
+    type="text"
+    value={form.imageUrl || ''}
+    onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
+    placeholder="https://example.com/image.png"
+    style={{
+      width: "100%",
+      padding: "10px 12px",
+      border: "1px solid rgba(44,26,14,0.25)",
+      borderRadius: "4px",
+      backgroundColor: "#EDE0C4",
+      color: "#2C1A0E",
+      fontSize: "0.9rem",
+      boxSizing: "border-box",
+      fontFamily
+    }}
+  />
+</div>
               <div className="flex gap-3 mt-2">
                 <button
                   onClick={() => setShowForm(false)}
