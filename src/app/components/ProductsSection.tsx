@@ -9,15 +9,17 @@ export interface Product {
   id: string;
   name: string;
   description: string;
+  nameAr?: string;
+  descriptionAr?: string;
   price: number;
   category: Category;
 }
 
 interface ProductsSectionProps {
   products: Product[];
-  onAdd: (p: Omit<Product, "id">) => void;
-  onEdit: (p: Product) => void;
-  onDelete: (id: string) => void;
+  onAdd: (p: Omit<Product, "id">) => Promise<void>;
+  onEdit: (p: Product) => Promise<void>;
+  onDelete: (id: string) => Promise<void>;
   isAdmin: boolean;
 }
 
@@ -35,6 +37,7 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [form, setForm] = useState<Omit<Product, "id">>(EMPTY_FORM);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
   const { t, language, isRTL } = useLanguage();
   const fontFamily = isRTL ? "'Cairo', sans-serif" : "'Lato', sans-serif";
   const serifFamily = isRTL ? "'Cairo', sans-serif" : "'Playfair Display', serif";
@@ -55,25 +58,37 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
     setShowForm(true);
   };
 
-  const handleSubmit = () => {
-    if (!form.name.trim() || form.price <= 0) return;
-    if (editingProduct) {
-      onEdit({ ...editingProduct, ...form });
-    } else {
-      onAdd(form);
+  const handleSubmit = async () => {
+    if (!form.name.trim() || form.price <= 0 || isSaving) return;
+    setIsSaving(true);
+    try {
+      if (editingProduct) {
+        await onEdit({ ...editingProduct, ...form });
+      } else {
+        await onAdd(form);
+      }
+      setShowForm(false);
+      setForm(EMPTY_FORM);
+      setEditingProduct(null);
+    } catch {
+      window.alert("Could not save product. Please try again.");
+    } finally {
+      setIsSaving(false);
     }
-    setShowForm(false);
-    setForm(EMPTY_FORM);
-    setEditingProduct(null);
   };
 
-  const handleDelete = (id: string) => {
-    if (deleteConfirm === id) {
-      onDelete(id);
-      setDeleteConfirm(null);
-    } else {
+  const handleDelete = async (id: string) => {
+    if (deleteConfirm !== id) {
       setDeleteConfirm(id);
       setTimeout(() => setDeleteConfirm(null), 3000);
+      return;
+    }
+    try {
+      await onDelete(id);
+      setDeleteConfirm(null);
+    } catch {
+      window.alert("Could not delete product. Please try again.");
+      setDeleteConfirm(null);
     }
   };
 
@@ -145,7 +160,7 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filtered.map((p) => {
-              const localized = getLocalizedProduct(p.id, p.name, p.description, language);
+              const localized = getLocalizedProduct(p, language);
               return (
                 <div
                   key={p.id}
@@ -412,7 +427,7 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
                 </button>
                 <button
                   onClick={handleSubmit}
-                  disabled={!form.name.trim() || form.price <= 0}
+                  disabled={!form.name.trim() || form.price <= 0 || isSaving}
                   style={{
                     flex: 2,
                     padding: "10px",
@@ -425,7 +440,7 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
                     fontSize: "0.9rem",
                   }}
                 >
-                  {editingProduct ? t.products.saveChanges : t.products.addProduct}
+                  {isSaving ? "…" : editingProduct ? t.products.saveChanges : t.products.addProduct}
                 </button>
               </div>
             </div>

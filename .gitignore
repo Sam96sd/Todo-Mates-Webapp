@@ -4,3 +4,5 @@
 **/.ext/
 build/
 .env
+.vercel
+.env*

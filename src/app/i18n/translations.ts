@@ -374,14 +374,18 @@ export const productTranslations: Record<
 };
 
 export function getLocalizedProduct(
-  id: string,
-  name: string,
-  description: string,
+  product: { id: string; name: string; description: string; nameAr?: string; descriptionAr?: string },
   lang: Language
 ): { name: string; description: string } {
-  const t = productTranslations[id];
-  if (t) return t[lang];
-  return { name, description };
+  if (lang === "ar" && product.nameAr) {
+    return {
+      name: product.nameAr,
+      description: product.descriptionAr ?? product.description,
+    };
+  }
+  const legacy = productTranslations[product.id];
+  if (legacy) return legacy[lang];
+  return { name: product.name, description: product.description };
 }
 
 export function interpolate(text: string, vars: Record<string, string | number>): string {

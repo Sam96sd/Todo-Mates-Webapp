@@ -12,7 +12,7 @@ interface BulkTier {
 interface BulkCalculatorProps {
   products: Product[];
   tiers: BulkTier[];
-  onUpdateTiers: (tiers: BulkTier[]) => void;
+  onUpdateTiers: (tiers: BulkTier[]) => Promise<void>;
   isAdmin: boolean;
 }
 
@@ -21,6 +21,7 @@ export function BulkCalculator({ products, tiers, onUpdateTiers, isAdmin }: Bulk
   const [qty, setQty] = useState(3);
   const [editingTiers, setEditingTiers] = useState(false);
   const [draftTiers, setDraftTiers] = useState<BulkTier[]>(tiers);
+  const [isSavingTiers, setIsSavingTiers] = useState(false);
   const { t, language, isRTL } = useLanguage();
   const fontFamily = isRTL ? "'Cairo', sans-serif" : "'Lato', sans-serif";
   const serifFamily = isRTL ? "'Cairo', sans-serif" : "'Playfair Display', serif";
@@ -53,10 +54,17 @@ export function BulkCalculator({ products, tiers, onUpdateTiers, isAdmin }: Bulk
     setDraftTiers(draftTiers.map((t, i) => (i === idx ? { ...t, [field]: value } : t)));
   };
 
-  const saveTiers = () => {
+  const saveTiers = async () => {
     const valid = draftTiers.filter((t) => t.minQty >= 3 && t.discountPct > 0 && t.discountPct <= 100);
-    onUpdateTiers(valid);
-    setEditingTiers(false);
+    setIsSavingTiers(true);
+    try {
+      await onUpdateTiers(valid);
+      setEditingTiers(false);
+    } catch {
+      window.alert("Could not save discount tiers. Please try again.");
+    } finally {
+      setIsSavingTiers(false);
+    }
   };
 
   const cancelEditTiers = () => {
@@ -121,7 +129,7 @@ export function BulkCalculator({ products, tiers, onUpdateTiers, isAdmin }: Bulk
                 >
                   <option value="" style={{ backgroundColor: "#2D5016" }}>{t.bulk.chooseProduct}</option>
                   {products.map((p) => {
-                    const localized = getLocalizedProduct(p.id, p.name, p.description, language);
+                    const localized = getLocalizedProduct(p, language);
                     return (
                       <option key={p.id} value={p.id} style={{ backgroundColor: "#2D5016" }}>
                         {localized.name} — {p.price.toLocaleString()} SP
@@ -411,10 +419,11 @@ export function BulkCalculator({ products, tiers, onUpdateTiers, isAdmin }: Bulk
                   </button>
                   <button
                     onClick={saveTiers}
+                    disabled={isSavingTiers}
                     style={{
                       flex: 2,
                       padding: "9px",
-                      backgroundColor: "#c5e87a",
+                      backgroundColor: isSavingTiers ? "#D4C5A0" : "#c5e87a",
                       color: "#1e3a0f",
                       border: "none",
                       borderRadius: "4px",
@@ -427,7 +436,7 @@ export function BulkCalculator({ products, tiers, onUpdateTiers, isAdmin }: Bulk
                       gap: "6px",
                     }}
                   >
-                    <Check size={14} /> {t.bulk.saveTiers}
+                    <Check size={14} /> {isSavingTiers ? "…" : t.bulk.saveTiers}
                   </button>
                 </div>
               </div>

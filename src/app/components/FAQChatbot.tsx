@@ -11,7 +11,7 @@ interface ContactInfo {
 
 interface FAQChatbotProps {
   contactInfo: ContactInfo;
-  onUpdateContact: (info: ContactInfo) => void;
+  onUpdateContact: (info: ContactInfo) => Promise<void>;
   isAdmin: boolean;
 }
 
@@ -163,7 +163,12 @@ export function FAQChatbot({ contactInfo, onUpdateContact, isAdmin }: FAQChatbot
   const [input, setInput] = useState("");
   const [editingContact, setEditingContact] = useState(false);
   const [draftContact, setDraftContact] = useState(contactInfo);
+  const [isSavingContact, setIsSavingContact] = useState(false);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setDraftContact(contactInfo);
+  }, [contactInfo]);
 
   useEffect(() => {
     setMessages([
@@ -201,9 +206,16 @@ export function FAQChatbot({ contactInfo, onUpdateContact, isAdmin }: FAQChatbot
     requestAnimationFrame(scrollChatToBottom);
   };
 
-  const saveContact = () => {
-    onUpdateContact(draftContact);
-    setEditingContact(false);
+  const saveContact = async () => {
+    setIsSavingContact(true);
+    try {
+      await onUpdateContact(draftContact);
+      setEditingContact(false);
+    } catch {
+      window.alert("Could not save contact info. Please try again.");
+    } finally {
+      setIsSavingContact(false);
+    }
   };
 
   const whatsappUrl = contactInfo.whatsapp
@@ -548,10 +560,11 @@ export function FAQChatbot({ contactInfo, onUpdateContact, isAdmin }: FAQChatbot
                     </button>
                     <button
                       onClick={saveContact}
+                      disabled={isSavingContact}
                       style={{
                         flex: 2,
                         padding: "8px",
-                        backgroundColor: "#2D5016",
+                        backgroundColor: isSavingContact ? "#D4C5A0" : "#2D5016",
                         color: "#F4ECD8",
                         border: "none",
                         borderRadius: "4px",
@@ -564,7 +577,7 @@ export function FAQChatbot({ contactInfo, onUpdateContact, isAdmin }: FAQChatbot
                         gap: "4px",
                       }}
                     >
-                      <Check size={13} /> {t.faq.save}
+                      <Check size={13} /> {isSavingContact ? "…" : t.faq.save}
                     </button>
                   </div>
                 </div>
