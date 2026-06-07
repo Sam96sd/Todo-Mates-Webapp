@@ -54,7 +54,14 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
 
   const openEdit = (p: Product) => {
     setEditingProduct(p);
-    setForm({ name: p.name, description: p.description, price: p.price, category: p.category });
+    setForm({ 
+      name: p.name, 
+      description: p.description, 
+      nameAr: p.nameAr || "", 
+      descriptionAr: p.descriptionAr || "", 
+      price: p.price, 
+      category: p.category 
+    });
     setShowForm(true);
   };
 
