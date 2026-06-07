@@ -1,0 +1,435 @@
+import { useState } from "react";
+import { Plus, Pencil, Trash2, X, Check, Package } from "lucide-react";
+
+export type Category = "mate" | "bombilla" | "gourd";
+
+export interface Product {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  category: Category;
+}
+
+interface ProductsSectionProps {
+  products: Product[];
+  onAdd: (p: Omit<Product, "id">) => void;
+  onEdit: (p: Product) => void;
+  onDelete: (id: string) => void;
+  isAdmin: boolean;
+}
+
+const categoryLabels: Record<Category, string> = {
+  mate: "Yerba Mate",
+  bombilla: "Bombilla",
+  gourd: "Gourd / Cup",
+};
+
+const categoryEmoji: Record<Category, string> = {
+  mate: "🌿",
+  bombilla: "🥤",
+  gourd: "🫙",
+};
+
+const EMPTY_FORM = { name: "", description: "", price: 0, category: "mate" as Category };
+
+export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: ProductsSectionProps) {
+  const [filter, setFilter] = useState<Category | "all">("all");
+  const [showForm, setShowForm] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [form, setForm] = useState<Omit<Product, "id">>(EMPTY_FORM);
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+
+  const filtered = filter === "all" ? products : products.filter((p) => p.category === filter);
+
+  const openAdd = () => {
+    setEditingProduct(null);
+    setForm(EMPTY_FORM);
+    setShowForm(true);
+  };
+
+  const openEdit = (p: Product) => {
+    setEditingProduct(p);
+    setForm({ name: p.name, description: p.description, price: p.price, category: p.category });
+    setShowForm(true);
+  };
+
+  const handleSubmit = () => {
+    if (!form.name.trim() || form.price <= 0) return;
+    if (editingProduct) {
+      onEdit({ ...editingProduct, ...form });
+    } else {
+      onAdd(form);
+    }
+    setShowForm(false);
+    setForm(EMPTY_FORM);
+    setEditingProduct(null);
+  };
+
+  const handleDelete = (id: string) => {
+    if (deleteConfirm === id) {
+      onDelete(id);
+      setDeleteConfirm(null);
+    } else {
+      setDeleteConfirm(id);
+      setTimeout(() => setDeleteConfirm(null), 3000);
+    }
+  };
+
+  return (
+    <section
+      id="products"
+      style={{ backgroundColor: "#F4ECD8", fontFamily: "'Lato', sans-serif", padding: "80px 0" }}
+    >
+      <div className="max-w-6xl mx-auto px-6">
+        {/* Header */}
+        <div className="flex flex-wrap items-end justify-between gap-4 mb-10">
+          <div>
+            <p style={{ color: "#B85C38", fontSize: "0.8rem", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: "4px" }}>
+              Our Collection
+            </p>
+            <h2 style={{ fontFamily: "'Playfair Display', serif", color: "#2C1A0E", fontSize: "2rem", fontWeight: 700 }}>
+              Products
+            </h2>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Category filters */}
+            {(["all", "mate", "bombilla", "gourd"] as const).map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setFilter(cat)}
+                style={{
+                  padding: "6px 16px",
+                  borderRadius: "20px",
+                  border: "1px solid",
+                  borderColor: filter === cat ? "#2D5016" : "rgba(44,26,14,0.25)",
+                  backgroundColor: filter === cat ? "#2D5016" : "transparent",
+                  color: filter === cat ? "#F4ECD8" : "#6B5340",
+                  fontSize: "0.82rem",
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                }}
+              >
+                {cat === "all" ? "All" : categoryLabels[cat]}
+              </button>
+            ))}
+            {isAdmin && (
+              <button
+                onClick={openAdd}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  padding: "8px 18px",
+                  backgroundColor: "#B85C38",
+                  color: "#F4ECD8",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                  fontSize: "0.85rem",
+                  fontWeight: 700,
+                }}
+              >
+                <Plus size={15} /> Add Product
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Products grid */}
+        {filtered.length === 0 ? (
+          <div className="text-center py-16">
+            <Package size={40} style={{ color: "#D4C5A0", margin: "0 auto 12px" }} />
+            <p style={{ color: "#6B5340" }}>No products yet. {isAdmin ? "Add your first product!" : ""}</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filtered.map((p) => (
+              <div
+                key={p.id}
+                style={{
+                  backgroundColor: "#EDE0C4",
+                  border: "1px solid rgba(44,26,14,0.12)",
+                  borderRadius: "8px",
+                  overflow: "hidden",
+                  transition: "box-shadow 0.2s",
+                  boxShadow: "0 1px 4px rgba(44,26,14,0.08)",
+                }}
+                onMouseOver={(e) =>
+                  ((e.currentTarget as HTMLElement).style.boxShadow = "0 4px 16px rgba(44,26,14,0.15)")
+                }
+                onMouseOut={(e) =>
+                  ((e.currentTarget as HTMLElement).style.boxShadow = "0 1px 4px rgba(44,26,14,0.08)")
+                }
+              >
+                <div
+                  style={{
+                    height: "120px",
+                    backgroundColor: "#2D5016",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "3.5rem",
+                  }}
+                >
+                  {categoryEmoji[p.category]}
+                </div>
+                <div style={{ padding: "18px" }}>
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <div>
+                      <span
+                        style={{
+                          fontSize: "0.7rem",
+                          color: "#B85C38",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.1em",
+                        }}
+                      >
+                        {categoryLabels[p.category]}
+                      </span>
+                      <h3
+                        style={{
+                          fontFamily: "'Playfair Display', serif",
+                          fontSize: "1.1rem",
+                          color: "#2C1A0E",
+                          fontWeight: 600,
+                          marginTop: "2px",
+                        }}
+                      >
+                        {p.name}
+                      </h3>
+                    </div>
+                    <p
+                      style={{
+                        fontFamily: "'Playfair Display', serif",
+                        fontSize: "1.15rem",
+                        color: "#2D5016",
+                        fontWeight: 700,
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {p.price.toLocaleString()} SP
+                    </p>
+                  </div>
+                  <p style={{ color: "#6B5340", fontSize: "0.88rem", lineHeight: 1.6 }}>{p.description}</p>
+
+                  {isAdmin && (
+                    <div className="flex gap-2 mt-4 pt-3" style={{ borderTop: "1px solid rgba(44,26,14,0.1)" }}>
+                      <button
+                        onClick={() => openEdit(p)}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "4px",
+                          padding: "5px 12px",
+                          border: "1px solid rgba(44,26,14,0.25)",
+                          borderRadius: "4px",
+                          backgroundColor: "transparent",
+                          color: "#6B5340",
+                          fontSize: "0.8rem",
+                          cursor: "pointer",
+                        }}
+                      >
+                        <Pencil size={13} /> Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(p.id)}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "4px",
+                          padding: "5px 12px",
+                          border: `1px solid ${deleteConfirm === p.id ? "#c0392b" : "rgba(192,57,43,0.3)"}`,
+                          borderRadius: "4px",
+                          backgroundColor: deleteConfirm === p.id ? "#c0392b" : "transparent",
+                          color: deleteConfirm === p.id ? "#F4ECD8" : "#c0392b",
+                          fontSize: "0.8rem",
+                          cursor: "pointer",
+                          transition: "all 0.2s",
+                        }}
+                      >
+                        {deleteConfirm === p.id ? <><Check size={13} /> Confirm</> : <><Trash2 size={13} /> Delete</>}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Add/Edit Modal */}
+      {showForm && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            backgroundColor: "rgba(44,26,14,0.55)",
+            zIndex: 100,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "24px",
+          }}
+          onClick={(e) => e.target === e.currentTarget && setShowForm(false)}
+        >
+          <div
+            style={{
+              backgroundColor: "#F4ECD8",
+              borderRadius: "10px",
+              padding: "32px",
+              width: "100%",
+              maxWidth: "480px",
+              boxShadow: "0 20px 60px rgba(44,26,14,0.35)",
+            }}
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h3
+                style={{
+                  fontFamily: "'Playfair Display', serif",
+                  fontSize: "1.3rem",
+                  color: "#2C1A0E",
+                  fontWeight: 700,
+                }}
+              >
+                {editingProduct ? "Edit Product" : "Add Product"}
+              </h3>
+              <button onClick={() => setShowForm(false)} style={{ color: "#6B5340", cursor: "pointer" }}>
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <div>
+                <label style={{ display: "block", color: "#2C1A0E", fontSize: "0.85rem", marginBottom: "6px", fontWeight: 600 }}>
+                  Category
+                </label>
+                <select
+                  value={form.category}
+                  onChange={(e) => setForm({ ...form, category: e.target.value as Category })}
+                  style={{
+                    width: "100%",
+                    padding: "10px 12px",
+                    border: "1px solid rgba(44,26,14,0.25)",
+                    borderRadius: "4px",
+                    backgroundColor: "#EDE0C4",
+                    color: "#2C1A0E",
+                    fontSize: "0.9rem",
+                  }}
+                >
+                  <option value="mate">Yerba Mate</option>
+                  <option value="bombilla">Bombilla</option>
+                  <option value="gourd">Gourd / Cup</option>
+                </select>
+              </div>
+
+              <div>
+                <label style={{ display: "block", color: "#2C1A0E", fontSize: "0.85rem", marginBottom: "6px", fontWeight: 600 }}>
+                  Product Name *
+                </label>
+                <input
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  placeholder="e.g. Taragüi Mate 500g"
+                  style={{
+                    width: "100%",
+                    padding: "10px 12px",
+                    border: "1px solid rgba(44,26,14,0.25)",
+                    borderRadius: "4px",
+                    backgroundColor: "#EDE0C4",
+                    color: "#2C1A0E",
+                    fontSize: "0.9rem",
+                    boxSizing: "border-box",
+                  }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: "block", color: "#2C1A0E", fontSize: "0.85rem", marginBottom: "6px", fontWeight: 600 }}>
+                  Description
+                </label>
+                <textarea
+                  value={form.description}
+                  onChange={(e) => setForm({ ...form, description: e.target.value })}
+                  placeholder="Describe the product, its origin, taste profile..."
+                  rows={3}
+                  style={{
+                    width: "100%",
+                    padding: "10px 12px",
+                    border: "1px solid rgba(44,26,14,0.25)",
+                    borderRadius: "4px",
+                    backgroundColor: "#EDE0C4",
+                    color: "#2C1A0E",
+                    fontSize: "0.9rem",
+                    resize: "vertical",
+                    boxSizing: "border-box",
+                    fontFamily: "'Lato', sans-serif",
+                  }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: "block", color: "#2C1A0E", fontSize: "0.85rem", marginBottom: "6px", fontWeight: 600 }}>
+                  Price (SP) *
+                </label>
+                <input
+                  type="number"
+                  value={form.price || ""}
+                  onChange={(e) => setForm({ ...form, price: Number(e.target.value) })}
+                  placeholder="e.g. 25000"
+                  min={0}
+                  style={{
+                    width: "100%",
+                    padding: "10px 12px",
+                    border: "1px solid rgba(44,26,14,0.25)",
+                    borderRadius: "4px",
+                    backgroundColor: "#EDE0C4",
+                    color: "#2C1A0E",
+                    fontSize: "0.9rem",
+                    boxSizing: "border-box",
+                  }}
+                />
+              </div>
+
+              <div className="flex gap-3 mt-2">
+                <button
+                  onClick={() => setShowForm(false)}
+                  style={{
+                    flex: 1,
+                    padding: "10px",
+                    border: "1px solid rgba(44,26,14,0.25)",
+                    borderRadius: "4px",
+                    backgroundColor: "transparent",
+                    color: "#6B5340",
+                    cursor: "pointer",
+                    fontSize: "0.9rem",
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSubmit}
+                  disabled={!form.name.trim() || form.price <= 0}
+                  style={{
+                    flex: 2,
+                    padding: "10px",
+                    backgroundColor: form.name.trim() && form.price > 0 ? "#2D5016" : "#D4C5A0",
+                    color: "#F4ECD8",
+                    border: "none",
+                    borderRadius: "4px",
+                    cursor: form.name.trim() && form.price > 0 ? "pointer" : "not-allowed",
+                    fontWeight: 700,
+                    fontSize: "0.9rem",
+                  }}
+                >
+                  {editingProduct ? "Save Changes" : "Add Product"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
