@@ -2,7 +2,7 @@ export type Language = "en" | "ar";
 
 export const translations = {
   en: {
-    brand: "Mate Argentin",
+    brand: "Todo Mates - Argentina",
     nav: {
       home: "Home",
       products: "Products",
@@ -153,7 +153,7 @@ export const translations = {
     },
   },
   ar: {
-    brand: "متة أرجنتين",
+    brand: "تودو متة - الأرجنتين",
     nav: {
       home: "الرئيسية",
       products: "المنتجات",
