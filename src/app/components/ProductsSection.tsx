@@ -348,50 +348,53 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
                 </select>
               </div>
 
-              <div>
-                <label style={{ display: "block", color: "#2C1A0E", fontSize: "0.85rem", marginBottom: "6px", fontWeight: 600 }}>
-                  {t.products.productName}
-                </label>
-                <input
-                  value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  placeholder={t.products.productNamePlaceholder}
-                  style={{
-                    width: "100%",
-                    padding: "10px 12px",
-                    border: "1px solid rgba(44,26,14,0.25)",
-                    borderRadius: "4px",
-                    backgroundColor: "#EDE0C4",
-                    color: "#2C1A0E",
-                    fontSize: "0.9rem",
-                    boxSizing: "border-box",
-                  }}
-                />
-              </div>
-              <div style={{ marginTop: "12px" }}>
-  <label style={{ display: "block", color: "#2C1A0E", fontSize: "0.85rem", marginBottom: "6px", fontWeight: 700 }}>
-    اسم المنتج (AR)
-  </label>
-  <input
-    type="text"
-    value={form.nameAr || ''}
-    onChange={(e) => setForm({ ...form, nameAr: e.target.value })}
-    placeholder="أدخل اسم المنتج باللغة العربية..."
-    dir="rtl"
-    style={{
-      width: "100%",
-      padding: "10px 12px",
-      border: "1px solid rgba(44,26,14,0.25)",
-      borderRadius: "4px",
-      backgroundColor: "#EDE0C4",
-      color: "#2C1A0E",
-      fontSize: "0.9rem",
-      boxSizing: "border-box",
-      fontFamily,
-      textAlign: "right"
-    }}
-  />
-</div>
+              <div style={{ display: "flex", gap: "12px", marginTop: "12px" }}>
+  {/* English Product Name Column */}
+  <div style={{ flex: 1 }}>
+    <label style={{ display: "block", color: "#2C1A0E", fontSize: "0.85rem", marginBottom: "6px", fontWeight: 700 }}>
+      {t.products.productName} *
+    </label>
+    <input
+      value={form.name}
+      onChange={(e) => setForm({ ...form, name: e.target.value })}
+      placeholder={t.products.productNamePlaceholder}
+      style={{
+        width: "100%",
+        padding: "10px 12px",
+        border: "1px solid rgba(44,26,14,0.25)",
+        borderRadius: "4px",
+        backgroundColor: "#EDE0C4",
+        color: "#2C1A0E",
+        fontSize: "0.9rem",
+        boxSizing: "border-box"
+      }}
+    />
+  </div>
+
+  {/* Arabic Product Name Column */}
+  <div style={{ flex: 1 }}>
+    <label style={{ display: "block", color: "#2C1A0E", fontSize: "0.85rem", marginBottom: "6px", fontWeight: 700 }}>
+      اسم المنتج (AR)
+    </label>
+    <input
+      type="text"
+      value={form.nameAr || ''}
+      onChange={(e) => setForm({ ...form, nameAr: e.target.value })}
+      placeholder="...أدخل اسم المنتج باللغة العربية"
+      dir="rtl"
+      style={{
+        width: "100%",
+        padding: "10px 12px",
+        border: "1px solid rgba(44,26,14,0.25)",
+        borderRadius: "4px",
+        backgroundColor: "#EDE0C4",
+        color: "#2C1A0E",
+        fontSize: "0.9rem",
+        boxSizing: "border-box",
+        textAlign: "right"
+      }}
+    />
+  </div>
               <div>
                 <label style={{ display: "block", color: "#2C1A0E", fontSize: "0.85rem", marginBottom: "6px", fontWeight: 600 }}>
                   {t.products.description}
