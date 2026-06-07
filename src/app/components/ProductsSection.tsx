@@ -11,6 +11,7 @@ export interface Product {
   description: string;
   nameAr?: string;
   descriptionAr?: string;
+  image_url?: string;
   price: number;
   category: Category;
 }
@@ -59,6 +60,7 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
       description: p.description, 
       nameAr: p.nameAr || "", 
       descriptionAr: p.descriptionAr || "", 
+      image_url: p.image_url || "",
       price: p.price, 
       category: p.category 
     });
