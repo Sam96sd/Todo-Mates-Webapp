@@ -101,11 +101,11 @@ export const translations = {
     faq: {
       subtitle: "Ask Anything",
       title: "FAQ Assistant",
-      chatHeader: "Mate Argentin — FAQ Assistant",
+      chatHeader: "Smart Assistant SAM",
       inputPlaceholder: "Type your question...",
       contactUs: "Contact Us",
       edit: "Edit",
-      whatsappOnly: "WhatsApp Only",
+      whatsappOnly: "WhatsApp Only (No calls)",
       whatsappComingSoon: "WhatsApp coming soon",
       whatsappAddAdmin: "Add WhatsApp number in edit mode",
       instagram: "Instagram",
@@ -125,7 +125,7 @@ export const translations = {
       quickQ3: "How do I get a discount?",
       quickQ4: "What types of products do you sell?",
       welcome:
-        "Welcome to Mate Argentin! 🧉\n\nAsk me about our products, prices, or delivery and I'll be happy to help.",
+        "Welcome to Todo Mates! 🧉\n\nAsk me about our products, prices, or delivery and I'll be happy to help.",
       defaultResponse:
         "Thanks for your question! 😊\n\nI can help you with:\n• Product information\n• Prices and discounts\n• Delivery and shipping\n• Contacting us\n\nOr reach us directly on WhatsApp!",
     },
@@ -139,7 +139,7 @@ export const translations = {
       whatsappComingSoon: "💬 WhatsApp — coming soon",
       instagramComingSoon: "📸 Instagram — coming soon",
       facebookComingSoon: "👍 Facebook — coming soon",
-      rights: "© {year} Mate Argentin — All rights reserved",
+      rights: "© {year} Todo Mates — All rights reserved",
       original: "🇦🇷 Original Products from Argentina",
     },
     admin: {
@@ -253,7 +253,7 @@ export const translations = {
       inputPlaceholder: "اكتب سؤالك هنا...",
       contactUs: "تواصل معنا",
       edit: "تعديل",
-      whatsappOnly: "واتساب فقط",
+      whatsappOnly: "واتساب فقط (لا يوجد مكالمات)",
       whatsappComingSoon: "واتساب قريباً",
       whatsappAddAdmin: "أضف رقم واتساب في وضع التعديل",
       instagram: "انستغرام",

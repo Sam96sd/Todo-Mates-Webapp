@@ -31,7 +31,7 @@ const FAQ_RESPONSES: Record<Language, Array<{ keywords: string[]; answer: string
     },
     {
       keywords: ["واتس", "whatsapp", "اتصال", "contact", "تواصل", "رقم", "phone", "number"],
-      answer: "يمكنك التواصل معنا عبر واتساب فقط 📱\nسنضع رقمنا هنا بمجرد إضافته من الإدارة.\n\nكما يمكنك متابعتنا على انستغرام وفيسبوك!",
+      answer: "يمكنك التواصل معنا عبر واتساب فقط (لا يوجد مكالمات) 📱\nسنضع رقمنا هنا بمجرد إضافته من الإدارة.\n\nكما يمكنك متابعتنا على انستغرام وفيسبوك!",
     },
     {
       keywords: ["سعر", "price", "أسعار", "تخفيض", "discount", "خصم", "كمية", "bulk", "جملة"],
@@ -83,7 +83,7 @@ const FAQ_RESPONSES: Record<Language, Array<{ keywords: string[]; answer: string
     {
       keywords: ["whatsapp", "contact", "phone", "number", "واتس", "اتصال", "تواصل", "رقم"],
       answer:
-        "You can reach us on WhatsApp only 📱\nWe'll add our number here once it's set up by admin.\n\nYou can also follow us on Instagram and Facebook!",
+        "You can reach us on WhatsApp only (No calls) 📱\nWe'll add our number here once it's set up by admin.\n\nYou can also follow us on Instagram and Facebook!",
     },
     {
       keywords: ["price", "prices", "discount", "bulk", "سعر", "أسعار", "تخفيض", "خصم", "جملة"],
