@@ -88,7 +88,7 @@ export const translations = {
       quote:
         '"We guarantee every single product is original from Argentina. No imitations, no shortcuts — just authentic mate, bombillas, and gourds."',
       localDelivery: "Local Delivery — Deir Atiyeh",
-      localDeliveryDesc: "We deliver directly to your door anywhere in Deir Atiyeh. Fast, personal, and reliable.",
+      localDeliveryDesc: "We deliver directly to your door anywhere in Deir Atiyeh. Fast, personal, and reliable. For 150 SYP.",
       nationwide: "Nationwide Shipping — Al-Kodmous",
       nationwideDesc:
         "For orders outside Deir Atiyeh, we ship via Al-Kodmous delivery company to all Syrian cities.",
@@ -240,7 +240,7 @@ export const translations = {
       quote:
         '"نضمن أن كل منتج أصلي من الأرجنتين. بدون تقليد — فقط متة ومصاصات وجوزات أصلية."',
       localDelivery: "توصيل محلي — ديرعطية",
-      localDeliveryDesc: "نوصل مأجور مباشرة لباب منزلك في أي مكان بديرعطية. شخصي وموثوق بتكلفة 100 ليرة سورية جديدة/ 10 آلاف قديمة.",
+      localDeliveryDesc: "نوصل مأجور مباشرة لباب منزلك في أي مكان بديرعطية. شخصي وموثوق بتكلفة 150 ليرة سورية جديدة.",
       nationwide: "شحن على مستوى سوريا — القدموس",
       nationwideDesc: "للطلبات خارج ديرعطية، نشحن عبر شركة القدموس لجميع المحافظات السورية.",
       original: "أصلي 100% من الأرجنتين",
