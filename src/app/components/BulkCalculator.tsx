@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Minus, Pencil, Check, X } from "lucide-react";
+import { Plus, Minus, Pencil, Check, X, Trash2 } from "lucide-react";
 import type { Product } from "./ProductsSection";
 import { useLanguage, interpolate } from "../i18n/LanguageContext";
 import { getLocalizedProduct } from "../i18n/translations";
@@ -7,6 +7,11 @@ import { getLocalizedProduct } from "../i18n/translations";
 interface BulkTier {
   minQty: number;
   discountPct: number;
+}
+
+interface CartItem {
+  productId: string;
+  qty: number;
 }
 
 interface BulkCalculatorProps {
@@ -17,8 +22,9 @@ interface BulkCalculatorProps {
 }
 
 export function BulkCalculator({ products, tiers, onUpdateTiers, isAdmin }: BulkCalculatorProps) {
-  const [selectedProduct, setSelectedProduct] = useState<string>("");
-  const [qty, setQty] = useState(3);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [pendingProduct, setPendingProduct] = useState<string>("");
+  const [pendingQty, setPendingQty] = useState(1);
   const [editingTiers, setEditingTiers] = useState(false);
   const [draftTiers, setDraftTiers] = useState<BulkTier[]>(tiers);
   const [isSavingTiers, setIsSavingTiers] = useState(false);
@@ -26,7 +32,10 @@ export function BulkCalculator({ products, tiers, onUpdateTiers, isAdmin }: Bulk
   const fontFamily = isRTL ? "'Cairo', sans-serif" : "'Lato', sans-serif";
   const serifFamily = isRTL ? "'Cairo', sans-serif" : "'Playfair Display', serif";
 
-  const product = products.find((p) => p.id === selectedProduct);
+  const formatPrice = (amount: number) =>
+    language === "ar"
+      ? `${amount.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })} $`
+      : `$${amount.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
 
   const getDiscount = (quantity: number): number => {
     const applicable = [...tiers]
@@ -35,11 +44,45 @@ export function BulkCalculator({ products, tiers, onUpdateTiers, isAdmin }: Bulk
     return applicable ? applicable.discountPct : 0;
   };
 
-  const discountPct = getDiscount(qty);
-  const unitPrice = product?.price ?? 0;
-  const total = unitPrice * qty;
-  const discounted = total * (1 - discountPct / 100);
-  const savings = total - discounted;
+  const totalQty = cartItems.reduce((sum, item) => sum + item.qty, 0);
+  const discountPct = getDiscount(totalQty);
+  const subtotal = cartItems.reduce((sum, item) => {
+    const product = products.find((p) => p.id === item.productId);
+    return sum + (product?.price ?? 0) * item.qty;
+  }, 0);
+  const discounted = subtotal * (1 - discountPct / 100);
+  const savings = subtotal - discounted;
+
+  const addToCart = () => {
+    if (!pendingProduct) return;
+    setCartItems((prev) => {
+      const existing = prev.find((item) => item.productId === pendingProduct);
+      if (existing) {
+        return prev.map((item) =>
+          item.productId === pendingProduct
+            ? { ...item, qty: item.qty + pendingQty }
+            : item
+        );
+      }
+      return [...prev, { productId: pendingProduct, qty: pendingQty }];
+    });
+    setPendingProduct("");
+    setPendingQty(1);
+  };
+
+  const updateCartQty = (productId: string, qty: number) => {
+    if (qty < 1) {
+      setCartItems((prev) => prev.filter((item) => item.productId !== productId));
+      return;
+    }
+    setCartItems((prev) =>
+      prev.map((item) => (item.productId === productId ? { ...item, qty } : item))
+    );
+  };
+
+  const removeFromCart = (productId: string) => {
+    setCartItems((prev) => prev.filter((item) => item.productId !== productId));
+  };
 
   const addDraftTier = () => {
     const lastMin = draftTiers.length > 0 ? Math.max(...draftTiers.map((t) => t.minQty)) : 2;
@@ -115,8 +158,8 @@ export function BulkCalculator({ products, tiers, onUpdateTiers, isAdmin }: Bulk
                   {t.bulk.selectProduct}
                 </label>
                 <select
-                  value={selectedProduct}
-                  onChange={(e) => setSelectedProduct(e.target.value)}
+                  value={pendingProduct}
+                  onChange={(e) => setPendingProduct(e.target.value)}
                   style={{
                     width: "100%",
                     padding: "10px 12px",
@@ -132,7 +175,7 @@ export function BulkCalculator({ products, tiers, onUpdateTiers, isAdmin }: Bulk
                     const localized = getLocalizedProduct(p, language);
                     return (
                       <option key={p.id} value={p.id} style={{ backgroundColor: "#2D5016" }}>
-                        {localized.name} — {language === "ar" ? `${p.price.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })} $` : `$${p.price.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`}
+                        {localized.name} — {formatPrice(p.price)}
                       </option>
                     );
                   })}
@@ -145,7 +188,7 @@ export function BulkCalculator({ products, tiers, onUpdateTiers, isAdmin }: Bulk
                 </label>
                 <div className="flex items-center gap-3">
                   <button
-                    onClick={() => setQty(Math.max(1, qty - 1))}
+                    onClick={() => setPendingQty(Math.max(1, pendingQty - 1))}
                     style={{
                       width: "36px",
                       height: "36px",
@@ -163,8 +206,8 @@ export function BulkCalculator({ products, tiers, onUpdateTiers, isAdmin }: Bulk
                   </button>
                   <input
                     type="number"
-                    value={qty}
-                    onChange={(e) => setQty(Math.max(1, Number(e.target.value)))}
+                    value={pendingQty}
+                    onChange={(e) => setPendingQty(Math.max(1, Number(e.target.value)))}
                     min={1}
                     style={{
                       width: "70px",
@@ -178,7 +221,7 @@ export function BulkCalculator({ products, tiers, onUpdateTiers, isAdmin }: Bulk
                     }}
                   />
                   <button
-                    onClick={() => setQty(qty + 1)}
+                    onClick={() => setPendingQty(pendingQty + 1)}
                     style={{
                       width: "36px",
                       height: "36px",
@@ -198,67 +241,179 @@ export function BulkCalculator({ products, tiers, onUpdateTiers, isAdmin }: Bulk
                 </div>
               </div>
 
-              {product && (
-                <div
-                  style={{
-                    marginTop: "8px",
-                    padding: "16px",
-                    backgroundColor: discountPct > 0 ? "rgba(197,232,122,0.1)" : "rgba(244,236,216,0.05)",
-                    border: `1px solid ${discountPct > 0 ? "rgba(197,232,122,0.3)" : "rgba(244,236,216,0.1)"}`,
-                    borderRadius: "6px",
-                  }}
-                >
-                  <div className="flex justify-between mb-2">
-                    <span style={{ color: "rgba(244,236,216,0.7)", fontSize: "0.85rem" }}>{t.bulk.unitPrice}</span>
-                    <span style={{ color: "#F4ECD8" }}>
-                      {language === "ar" ? `${unitPrice.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })} $` : `$${unitPrice.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`}
-                    </span>
-                  </div>
-                  <div className="flex justify-between mb-2">
-                    <span style={{ color: "rgba(244,236,216,0.7)", fontSize: "0.85rem" }}>
-                      {interpolate(t.bulk.subtotal, { qty })}
-                    </span>
-                    <span style={{ color: "#F4ECD8" }}>
-                      {language === "ar" ? `${total.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })} $` : `$${total.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`}
-                    </span>
-                  </div>
-                  {discountPct > 0 && (
-                    <div className="flex justify-between mb-2">
-                      <span style={{ color: "#c5e87a", fontSize: "0.85rem" }}>
-                        {interpolate(t.bulk.bulkDiscount, { pct: discountPct })}
-                      </span>
-                      <span style={{ color: "#c5e87a" }}>
-                        − {language === "ar" ? `${savings.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })} $` : `$${savings.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`}
-                      </span>
-                    </div>
-                  )}
+              <button
+                onClick={addToCart}
+                disabled={!pendingProduct}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "6px",
+                  padding: "10px",
+                  backgroundColor: pendingProduct ? "#c5e87a" : "rgba(244,236,216,0.12)",
+                  color: pendingProduct ? "#1e3a0f" : "rgba(244,236,216,0.45)",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: pendingProduct ? "pointer" : "not-allowed",
+                  fontWeight: 700,
+                  fontSize: "0.9rem",
+                }}
+              >
+                <Plus size={14} /> {t.bulk.addToOrder}
+              </button>
+
+              {cartItems.length > 0 ? (
+                <div className="flex flex-col gap-3">
+                  <h4 style={{ color: "#F4ECD8", fontSize: "0.9rem", fontWeight: 700, marginTop: "4px" }}>
+                    {t.bulk.yourOrder}
+                  </h4>
+                  {cartItems.map((item) => {
+                    const product = products.find((p) => p.id === item.productId);
+                    if (!product) return null;
+                    const localized = getLocalizedProduct(product, language);
+                    const lineTotal = product.price * item.qty;
+
+                    return (
+                      <div
+                        key={item.productId}
+                        style={{
+                          padding: "12px",
+                          backgroundColor: "rgba(244,236,216,0.05)",
+                          border: "1px solid rgba(244,236,216,0.12)",
+                          borderRadius: "6px",
+                        }}
+                      >
+                        <div className="flex items-start justify-between gap-3 mb-2">
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <p style={{ color: "#F4ECD8", fontSize: "0.88rem", fontWeight: 600 }}>
+                              {localized.name}
+                            </p>
+                            <p style={{ color: "rgba(244,236,216,0.55)", fontSize: "0.78rem", marginTop: "2px" }}>
+                              {formatPrice(product.price)} × {item.qty}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span style={{ color: "#F4ECD8", fontSize: "0.88rem", fontWeight: 600 }}>
+                              {formatPrice(lineTotal)}
+                            </span>
+                            <button
+                              onClick={() => removeFromCart(item.productId)}
+                              aria-label={t.bulk.removeItem}
+                              style={{
+                                color: "rgba(244,236,216,0.45)",
+                                cursor: "pointer",
+                                display: "flex",
+                                alignItems: "center",
+                              }}
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => updateCartQty(item.productId, item.qty - 1)}
+                            style={{
+                              width: "28px",
+                              height: "28px",
+                              borderRadius: "50%",
+                              backgroundColor: "rgba(244,236,216,0.1)",
+                              border: "1px solid rgba(244,236,216,0.2)",
+                              color: "#F4ECD8",
+                              cursor: "pointer",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <Minus size={12} />
+                          </button>
+                          <span style={{ color: "#F4ECD8", fontSize: "0.85rem", minWidth: "24px", textAlign: "center" }}>
+                            {item.qty}
+                          </span>
+                          <button
+                            onClick={() => updateCartQty(item.productId, item.qty + 1)}
+                            style={{
+                              width: "28px",
+                              height: "28px",
+                              borderRadius: "50%",
+                              backgroundColor: "rgba(244,236,216,0.1)",
+                              border: "1px solid rgba(244,236,216,0.2)",
+                              color: "#F4ECD8",
+                              cursor: "pointer",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <Plus size={12} />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+
                   <div
                     style={{
-                      borderTop: "1px solid rgba(244,236,216,0.15)",
-                      paddingTop: "10px",
-                      marginTop: "8px",
-                      display: "flex",
-                      justifyContent: "space-between",
+                      marginTop: "4px",
+                      padding: "16px",
+                      backgroundColor: discountPct > 0 ? "rgba(197,232,122,0.1)" : "rgba(244,236,216,0.05)",
+                      border: `1px solid ${discountPct > 0 ? "rgba(197,232,122,0.3)" : "rgba(244,236,216,0.1)"}`,
+                      borderRadius: "6px",
                     }}
                   >
-                    <span style={{ color: "#F4ECD8", fontWeight: 700 }}>{t.bulk.total}</span>
-                    <span
+                    <div className="flex justify-between mb-2">
+                      <span style={{ color: "rgba(244,236,216,0.7)", fontSize: "0.85rem" }}>
+                        {interpolate(t.bulk.totalPieces, { qty: totalQty })}
+                      </span>
+                      <span style={{ color: "#F4ECD8" }}>{totalQty}</span>
+                    </div>
+                    <div className="flex justify-between mb-2">
+                      <span style={{ color: "rgba(244,236,216,0.7)", fontSize: "0.85rem" }}>
+                        {interpolate(t.bulk.subtotal, { qty: totalQty })}
+                      </span>
+                      <span style={{ color: "#F4ECD8" }}>{formatPrice(subtotal)}</span>
+                    </div>
+                    {discountPct > 0 && (
+                      <div className="flex justify-between mb-2">
+                        <span style={{ color: "#c5e87a", fontSize: "0.85rem" }}>
+                          {interpolate(t.bulk.bulkDiscount, { pct: discountPct })}
+                        </span>
+                        <span style={{ color: "#c5e87a" }}>− {formatPrice(savings)}</span>
+                      </div>
+                    )}
+                    <div
                       style={{
-                        fontFamily: serifFamily,
-                        fontSize: "1.25rem",
-                        color: discountPct > 0 ? "#c5e87a" : "#F4ECD8",
-                        fontWeight: 700,
+                        borderTop: "1px solid rgba(244,236,216,0.15)",
+                        paddingTop: "10px",
+                        marginTop: "8px",
+                        display: "flex",
+                        justifyContent: "space-between",
                       }}
                     >
-                      {language === "ar" ? `${discounted.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })} $` : `$${discounted.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`}
-                    </span>
+                      <span style={{ color: "#F4ECD8", fontWeight: 700 }}>{t.bulk.total}</span>
+                      <span
+                        style={{
+                          fontFamily: serifFamily,
+                          fontSize: "1.25rem",
+                          color: discountPct > 0 ? "#c5e87a" : "#F4ECD8",
+                          fontWeight: 700,
+                        }}
+                      >
+                        {formatPrice(discounted)}
+                      </span>
+                    </div>
+                    {discountPct === 0 && totalQty < 3 && (
+                      <p style={{ color: "rgba(244,236,216,0.5)", fontSize: "0.78rem", marginTop: "8px" }}>
+                        {t.bulk.unlockDiscount}
+                      </p>
+                    )}
                   </div>
-                  {discountPct === 0 && qty < 3 && (
-                    <p style={{ color: "rgba(244,236,216,0.5)", fontSize: "0.78rem", marginTop: "8px" }}>
-                      {t.bulk.unlockDiscount}
-                    </p>
-                  )}
                 </div>
+              ) : (
+                <p style={{ color: "rgba(244,236,216,0.5)", fontSize: "0.85rem", marginTop: "4px" }}>
+                  {t.bulk.emptyCart}
+                </p>
               )}
             </div>
           </div>
