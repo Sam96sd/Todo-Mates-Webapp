@@ -1,7 +1,12 @@
 import { useState } from "react";
-import { Plus, Pencil, Trash2, X, Check, Package } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Check, Package, ZoomIn } from "lucide-react";
 import { useLanguage } from "../i18n/LanguageContext";
 import { getLocalizedProduct } from "../i18n/translations";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from "./ui/dialog";
 
 export type Category = "mate" | "bombilla" | "gourd";
 
@@ -39,6 +44,7 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
   const [form, setForm] = useState<Omit<Product, "id">>(EMPTY_FORM);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [enlargedProduct, setEnlargedProduct] = useState<Product | null>(null);
   const { t, language, isRTL } = useLanguage();
   const fontFamily = isRTL ? "'Cairo', sans-serif" : "'Lato', sans-serif";
   const serifFamily = isRTL ? "'Cairo', sans-serif" : "'Playfair Display', serif";
@@ -199,15 +205,59 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
                     borderBottom: "1px solid rgba(44, 26, 14, 0.08)"
                   }}>
                     {p.image_url ? (
-                      <img 
-                        src={p.image_url} 
-                        alt={localized.name} 
+                      <button
+                        type="button"
+                        onClick={() => setEnlargedProduct(p)}
+                        aria-label={t.products.enlargeImage}
+                        title={t.products.enlargeImage}
                         style={{
-                          maxWidth: "100%",
-                          maxHeight: "100%",
-                          objectFit: "contain"
+                          border: "none",
+                          background: "transparent",
+                          padding: 0,
+                          cursor: "pointer",
+                          width: "100%",
+                          height: "100%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          position: "relative",
                         }}
-                      />
+                        onMouseOver={(e) => {
+                          const overlay = e.currentTarget.querySelector("[data-zoom-overlay]") as HTMLElement | null;
+                          if (overlay) overlay.style.opacity = "1";
+                        }}
+                        onMouseOut={(e) => {
+                          const overlay = e.currentTarget.querySelector("[data-zoom-overlay]") as HTMLElement | null;
+                          if (overlay) overlay.style.opacity = "0";
+                        }}
+                      >
+                        <img
+                          src={p.image_url}
+                          alt={localized.name}
+                          style={{
+                            maxWidth: "100%",
+                            maxHeight: "100%",
+                            objectFit: "contain",
+                            transition: "transform 0.2s",
+                          }}
+                        />
+                        <span
+                          data-zoom-overlay
+                          style={{
+                            position: "absolute",
+                            inset: 0,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            backgroundColor: "rgba(44, 26, 14, 0.25)",
+                            opacity: 0,
+                            transition: "opacity 0.2s",
+                            pointerEvents: "none",
+                          }}
+                        >
+                          <ZoomIn size={32} color="#F4ECD8" strokeWidth={2} />
+                        </span>
+                      </button>
                     ) : (
                       <span style={{ fontSize: "4.5rem" }}>
                         {categoryEmoji[p.category]}
@@ -552,6 +602,55 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
           </div>
         </div>
       )}
+
+      <Dialog
+        open={!!enlargedProduct}
+        onOpenChange={(open) => !open && setEnlargedProduct(null)}
+      >
+        <DialogContent
+          className="max-w-3xl border-none p-4 sm:p-6"
+          style={{ backgroundColor: "#F4ECD8" }}
+        >
+          {enlargedProduct && (() => {
+            const localized = getLocalizedProduct(enlargedProduct, language);
+            return (
+              <>
+                <DialogTitle
+                  style={{
+                    fontFamily: serifFamily,
+                    color: "#2C1A0E",
+                    fontSize: "1.25rem",
+                    marginBottom: "12px",
+                  }}
+                >
+                  {localized.name}
+                </DialogTitle>
+                <div
+                  style={{
+                    backgroundColor: "#FFFFFF",
+                    borderRadius: "8px",
+                    padding: "16px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    minHeight: "200px",
+                  }}
+                >
+                  <img
+                    src={enlargedProduct.image_url}
+                    alt={localized.name}
+                    style={{
+                      maxWidth: "100%",
+                      maxHeight: "75vh",
+                      objectFit: "contain",
+                    }}
+                  />
+                </div>
+              </>
+            );
+          })()}
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }

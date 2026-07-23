@@ -50,6 +50,7 @@ export const translations = {
       pricePlaceholder: "e.g. 15.5",
       cancel: "Cancel",
       saveChanges: "Save Changes",
+      enlargeImage: "Click to enlarge image",
     },
     bulk: {
       subtitle: "Save More Together",
@@ -200,7 +201,8 @@ export const translations = {
       price: "السعر ($) *",
       pricePlaceholder: "مثال: 15.5",
       cancel: "إلغاء",
-      saveChanges: "حفظ التغييرات"
+      saveChanges: "حفظ التغييرات",
+      enlargeImage: "اضغط لتكبير الصورة",
     },
     bulk: {
       subtitle: "احصل على الخصومات",
