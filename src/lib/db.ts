@@ -62,11 +62,11 @@ const memoryDb = {
 export async function dbQuery(strings: TemplateStringsArray, ...values: any[]): Promise<{ rows: any[]; rowCount: number }> {
   if (isProduction) {
     try {
-      // Forward directly to vercel sql
       const result = await (vercelSql as any)(strings, ...values);
       return { rows: result.rows, rowCount: result.rowCount };
     } catch (err) {
-      console.warn("Database query failed on Vercel Postgres, falling back to memory database:", err);
+      console.error("Database query failed on Postgres:", err);
+      throw err;
     }
   }
 
