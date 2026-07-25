@@ -87,6 +87,7 @@ export async function createProduct(data: Omit<Product, "id">): Promise<Product>
       price: data.price,
       category: data.category,
       image_url: data.image_url,
+      sold_out: data.sold_out ?? false,
     }),
   });
 }
@@ -104,6 +105,7 @@ export async function updateProduct(data: Product): Promise<Product> {
       price: data.price,
       category: data.category,
       image_url: data.image_url,
+      sold_out: data.sold_out ?? false,
     }),
   });
 }
@@ -113,6 +115,23 @@ export async function deleteProduct(id: string): Promise<void> {
     method: "DELETE",
     headers: adminHeaders(),
   });
+}
+
+export async function reorderProducts(order: string[]): Promise<Product[]> {
+  return request<Product[]>("/api/products/reorder", {
+    method: "PUT",
+    headers: adminHeaders(),
+    body: JSON.stringify({ order }),
+  });
+}
+
+export async function uploadProductImage(imageDataUrl: string): Promise<string> {
+  const { url } = await request<{ url: string }>("/api/upload", {
+    method: "POST",
+    headers: adminHeaders(),
+    body: JSON.stringify({ image: imageDataUrl }),
+  });
+  return url;
 }
 
 export async function fetchSettings(): Promise<StoreSettings> {

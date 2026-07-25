@@ -7,7 +7,9 @@ CREATE TABLE IF NOT EXISTS products (
   name_ar TEXT,
   description_ar TEXT,
   price NUMERIC(10, 2) NOT NULL CHECK (price > 0),
-  category TEXT NOT NULL CHECK (category IN ('mate', 'bombilla', 'gourd')),
+  category TEXT NOT NULL CHECK (category IN ('mate', 'bombilla', 'gourd', 'other')),
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  sold_out BOOLEAN NOT NULL DEFAULT false,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

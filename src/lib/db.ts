@@ -15,6 +15,8 @@ const memoryDb = {
       price: 25000,
       category: "mate" as const,
       image_url: "https://images.unsplash.com/photo-1543362906-acfc16c67564?q=80&w=600&auto=format&fit=crop",
+      sort_order: 0,
+      sold_out: false,
       created_at: new Date(Date.now() - 600000)
     },
     {
@@ -26,6 +28,8 @@ const memoryDb = {
       price: 27000,
       category: "mate" as const,
       image_url: "https://images.unsplash.com/photo-1576092768241-dec231879fc3?q=80&w=600&auto=format&fit=crop",
+      sort_order: 1,
+      sold_out: false,
       created_at: new Date(Date.now() - 500000)
     },
     {
@@ -37,6 +41,8 @@ const memoryDb = {
       price: 18000,
       category: "bombilla" as const,
       image_url: "https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?q=80&w=600&auto=format&fit=crop",
+      sort_order: 2,
+      sold_out: false,
       created_at: new Date(Date.now() - 400000)
     }
   ],
@@ -69,7 +75,9 @@ export async function dbQuery(strings: TemplateStringsArray, ...values: any[]): 
 
   // 1. SELECT products
   if (query.includes("SELECT") && query.includes("FROM products")) {
-    const rows = [...memoryDb.products].map(p => ({
+    const rows = [...memoryDb.products]
+      .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0) || a.created_at.getTime() - b.created_at.getTime())
+      .map(p => ({
       id: p.id,
       name: p.name,
       description: p.description,
@@ -78,14 +86,22 @@ export async function dbQuery(strings: TemplateStringsArray, ...values: any[]): 
       price: p.price,
       category: p.category,
       image_url: p.image_url,
+      sort_order: p.sort_order ?? 0,
+      sold_out: p.sold_out ?? false,
       created_at: p.created_at
     }));
     return { rows, rowCount: rows.length };
   }
 
+  // 1b. MAX sort_order for new products
+  if (query.includes("MAX(sort_order)")) {
+    const nextOrder = memoryDb.products.reduce((max, p) => Math.max(max, p.sort_order ?? 0), -1) + 1;
+    return { rows: [{ next_order: nextOrder }], rowCount: 1 };
+  }
+
   // 2. INSERT products
   if (query.includes("INSERT INTO products")) {
-    const [name, description, name_ar, description_ar, price, category, image_url] = values;
+    const [name, description, name_ar, description_ar, price, category, image_url, sort_order, sold_out] = values;
     const newProduct = {
       id: Math.random().toString(36).substring(2, 11),
       name,
@@ -95,15 +111,28 @@ export async function dbQuery(strings: TemplateStringsArray, ...values: any[]): 
       price,
       category,
       image_url: image_url || null,
+      sort_order: sort_order ?? memoryDb.products.length,
+      sold_out: sold_out ?? false,
       created_at: new Date()
     };
     memoryDb.products.push(newProduct);
     return { rows: [newProduct], rowCount: 1 };
   }
 
-  // 3. UPDATE products
+  // 3. UPDATE products (reorder by sort_order)
+  if (query.includes("UPDATE products") && query.includes("sort_order =")) {
+    const [sort_order, id] = values;
+    const product = memoryDb.products.find(p => p.id === id);
+    if (product) {
+      product.sort_order = sort_order;
+      return { rows: [], rowCount: 1 };
+    }
+    return { rows: [], rowCount: 0 };
+  }
+
+  // 3b. UPDATE products (full edit)
   if (query.includes("UPDATE products")) {
-    const [name, description, name_ar, description_ar, price, category, image_url, id] = values;
+    const [name, description, name_ar, description_ar, price, category, image_url, sold_out, id] = values;
     const index = memoryDb.products.findIndex(p => p.id === id);
     if (index !== -1) {
       memoryDb.products[index] = {
@@ -114,7 +143,8 @@ export async function dbQuery(strings: TemplateStringsArray, ...values: any[]): 
         description_ar,
         price,
         category,
-        image_url: image_url || null
+        image_url: image_url || null,
+        sold_out: sold_out ?? false,
       };
       return { rows: [memoryDb.products[index]], rowCount: 1 };
     }

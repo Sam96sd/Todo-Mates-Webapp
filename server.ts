@@ -7,14 +7,16 @@ dotenv.config();
 
 // Let's import our Vercel handlers
 import productsHandler from "./api/products.js";
+import productsReorderHandler from "./api/products/reorder.js";
 import settingsHandler from "./api/settings.js";
 import authHandler from "./api/auth.js";
+import uploadHandler from "./api/upload.js";
 
 async function startServer() {
   const app = express();
   const PORT = 3000;
 
-  app.use(express.json());
+  app.use(express.json({ limit: "10mb" }));
 
   // Auto-migrate database column to support decimal prices in Vercel Postgres
   if (process.env.POSTGRES_URL) {
@@ -42,6 +44,8 @@ async function startServer() {
 
   // Wire up API endpoints
   app.all("/api/products", adaptHandler(productsHandler));
+  app.all("/api/products/reorder", adaptHandler(productsReorderHandler));
+  app.all("/api/upload", adaptHandler(uploadHandler));
   app.all("/api/settings", adaptHandler(settingsHandler));
   app.all("/api/auth", adaptHandler(authHandler));
 

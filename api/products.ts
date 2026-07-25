@@ -12,7 +12,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (!requireAdmin(req, res)) return;
 
     if (req.method === "POST") {
-      const { name, description, nameAr, descriptionAr, price, category, image_url } = req.body ?? {};
+      const { name, description, nameAr, descriptionAr, price, category, image_url, sold_out } = req.body ?? {};
       if (!name?.trim() || !category || !price || price <= 0) {
         return res.status(400).json({ error: "name, category, and price are required" });
       }
@@ -24,12 +24,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         price: Number(price),
         category,
         image_url: image_url?.trim(),
+        sold_out: Boolean(sold_out),
       });
       return res.status(201).json(product);
     }
 
     if (req.method === "PUT") {
-      const { id, name, description, nameAr, descriptionAr, price, category, image_url } = req.body ?? {};
+      const { id, name, description, nameAr, descriptionAr, price, category, image_url, sold_out } = req.body ?? {};
       if (!id || !name?.trim() || !category || !price || price <= 0) {
         return res.status(400).json({ error: "id, name, category, and price are required" });
       }
@@ -42,6 +43,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         price: Number(price),
         category,
         image_url: image_url?.trim(),
+        sold_out: Boolean(sold_out),
       });
       if (!product) return res.status(404).json({ error: "Product not found" });
       return res.status(200).json(product);

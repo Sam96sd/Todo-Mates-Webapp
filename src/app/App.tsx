@@ -13,6 +13,7 @@ import {
   createProduct,
   updateProduct,
   deleteProduct,
+  reorderProducts,
   updateContactInfo,
   updateDiscountTiers,
   verifyAdminPassword,
@@ -138,6 +139,11 @@ export default function App() {
     setProducts((prev) => prev.filter((p) => p.id !== id));
   };
 
+  const handleReorderProducts = async (order: string[]) => {
+    const reordered = await reorderProducts(order);
+    setProducts(reordered);
+  };
+
   const handleUpdateTiers = async (nextTiers: DiscountTier[]) => {
     const settings = await updateDiscountTiers(nextTiers);
     setTiers(settings.discountTiers);
@@ -212,6 +218,7 @@ export default function App() {
         onAdd={handleAddProduct}
         onEdit={handleEditProduct}
         onDelete={handleDeleteProduct}
+        onReorder={handleReorderProducts}
         isAdmin={isAdmin}
       />
 

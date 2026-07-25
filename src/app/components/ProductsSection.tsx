@@ -1,14 +1,19 @@
-import { useState } from "react";
-import { Plus, Pencil, Trash2, X, Check, Package, ZoomIn } from "lucide-react";
+import { useState, useRef } from "react";
+import { Plus, Pencil, Trash2, X, Check, Package, ZoomIn, ChevronUp, ChevronDown, Upload, ImageIcon } from "lucide-react";
 import { useLanguage } from "../i18n/LanguageContext";
 import { getLocalizedProduct } from "../i18n/translations";
+import { uploadProductImage } from "../../lib/api";
+import { compressImageForUpload, optimizeProductImageUrl, validateImageFile } from "../../lib/images";
 import {
   Dialog,
   DialogContent,
   DialogTitle,
 } from "./ui/dialog";
 
-export type Category = "mate" | "bombilla" | "gourd";
+export type Category = "mate" | "bombilla" | "gourd" | "other";
+
+export const PRODUCT_CATEGORIES = ["mate", "bombilla", "gourd", "other"] as const;
+export const FILTER_OPTIONS = ["all", ...PRODUCT_CATEGORIES] as const;
 
 export interface Product {
   id: string;
@@ -19,6 +24,7 @@ export interface Product {
   image_url?: string;
   price: number;
   category: Category;
+  sold_out?: boolean;
 }
 
 interface ProductsSectionProps {
@@ -26,6 +32,7 @@ interface ProductsSectionProps {
   onAdd: (p: Omit<Product, "id">) => Promise<void>;
   onEdit: (p: Product) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
+  onReorder: (order: string[]) => Promise<void>;
   isAdmin: boolean;
 }
 
@@ -33,18 +40,64 @@ const categoryEmoji: Record<Category, string> = {
   mate: "🌿",
   bombilla: "🥤",
   gourd: "🫙",
+  other: "📦",
 };
 
-const EMPTY_FORM = { name: "", description: "", price: 0, category: "mate" as Category, image_url: "" };
+const EMPTY_FORM = { name: "", description: "", price: 0, category: "mate" as Category, image_url: "", sold_out: false };
 
-export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: ProductsSectionProps) {
+function SoldOutOverlay() {
+  return (
+    <div
+      style={{
+        position: "absolute",
+        inset: 0,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "rgba(192, 57, 43, 0.82)",
+        zIndex: 2,
+        pointerEvents: "none",
+        gap: "4px",
+      }}
+    >
+      <span
+        style={{
+          color: "#F4ECD8",
+          fontWeight: 800,
+          fontSize: "1.15rem",
+          letterSpacing: "0.12em",
+          textTransform: "uppercase",
+        }}
+      >
+        SOLD OUT
+      </span>
+      <span
+        style={{
+          color: "#F4ECD8",
+          fontWeight: 700,
+          fontSize: "1rem",
+          fontFamily: "'Cairo', sans-serif",
+        }}
+      >
+        نفذت الكمية
+      </span>
+    </div>
+  );
+}
+
+export function ProductsSection({ products, onAdd, onEdit, onDelete, onReorder, isAdmin }: ProductsSectionProps) {
   const [filter, setFilter] = useState<Category | "all">("all");
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [form, setForm] = useState<Omit<Product, "id">>(EMPTY_FORM);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [isReordering, setIsReordering] = useState(false);
+  const [togglingSoldOut, setTogglingSoldOut] = useState<string | null>(null);
   const [enlargedProduct, setEnlargedProduct] = useState<Product | null>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { t, language, isRTL } = useLanguage();
   const fontFamily = isRTL ? "'Cairo', sans-serif" : "'Lato', sans-serif";
   const serifFamily = isRTL ? "'Cairo', sans-serif" : "'Playfair Display', serif";
@@ -56,6 +109,7 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
   const openAdd = () => {
     setEditingProduct(null);
     setForm(EMPTY_FORM);
+    setIsUploadingImage(false);
     setShowForm(true);
   };
 
@@ -68,9 +122,34 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
       descriptionAr: p.descriptionAr || "", 
       image_url: p.image_url || "",
       price: p.price, 
-      category: p.category 
+      category: p.category,
+      sold_out: p.sold_out ?? false,
     });
     setShowForm(true);
+  };
+
+  const handleImageFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const validationError = validateImageFile(file);
+    if (validationError) {
+      window.alert(`${t.products.invalidImage}: ${validationError}`);
+      e.target.value = "";
+      return;
+    }
+
+    setIsUploadingImage(true);
+    try {
+      const compressed = await compressImageForUpload(file);
+      const url = await uploadProductImage(compressed);
+      setForm((prev) => ({ ...prev, image_url: url }));
+    } catch {
+      window.alert(t.products.uploadFailed);
+    } finally {
+      setIsUploadingImage(false);
+      e.target.value = "";
+    }
   };
 
   const handleSubmit = async () => {
@@ -107,6 +186,46 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
     }
   };
 
+  const moveProduct = async (id: string, direction: "up" | "down") => {
+    if (isReordering) return;
+    const idx = filtered.findIndex((p) => p.id === id);
+    if (idx === -1) return;
+    const swapIdx = direction === "up" ? idx - 1 : idx + 1;
+    if (swapIdx < 0 || swapIdx >= filtered.length) return;
+
+    const globalIds = products.map((p) => p.id);
+    const posA = globalIds.indexOf(filtered[idx].id);
+    const posB = globalIds.indexOf(filtered[swapIdx].id);
+    [globalIds[posA], globalIds[posB]] = [globalIds[posB], globalIds[posA]];
+
+    setIsReordering(true);
+    try {
+      await onReorder(globalIds);
+    } catch {
+      window.alert("Could not reorder products. Please try again.");
+    } finally {
+      setIsReordering(false);
+    }
+  };
+
+  const handleImageClick = async (p: Product) => {
+    if (isAdmin) {
+      if (togglingSoldOut === p.id) return;
+      setTogglingSoldOut(p.id);
+      try {
+        await onEdit({ ...p, sold_out: !p.sold_out });
+      } catch {
+        window.alert("Could not update sold-out status. Please try again.");
+      } finally {
+        setTogglingSoldOut(null);
+      }
+      return;
+    }
+    if (p.image_url) {
+      setEnlargedProduct(p);
+    }
+  };
+
   return (
     <section
       id="products"
@@ -123,7 +242,7 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
             </h2>
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            {(["all", "mate", "bombilla", "gourd"] as const).map((cat) => (
+            {FILTER_OPTIONS.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setFilter(cat)}
@@ -174,8 +293,9 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filtered.map((p) => {
+            {filtered.map((p, index) => {
               const localized = getLocalizedProduct(p, language);
+              const cardImageSrc = optimizeProductImageUrl(p.image_url, 600);
               return (
                 <div
                   key={p.id}
@@ -194,7 +314,8 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
                     ((e.currentTarget as HTMLElement).style.boxShadow = "0 1px 4px rgba(44,26,14,0.08)")
                   }
                 >
-                  <div style={{ 
+                  <div
+                    style={{ 
                     height: "220px", 
                     backgroundColor: p.image_url ? "#FFFFFF" : "#2D5016", 
                     display: "flex", 
@@ -202,27 +323,31 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
                     justifyContent: "center", 
                     overflow: "hidden",
                     padding: p.image_url ? "12px" : "0",
-                    borderBottom: "1px solid rgba(44, 26, 14, 0.08)"
-                  }}>
+                    borderBottom: "1px solid rgba(44, 26, 14, 0.08)",
+                    position: "relative",
+                  }}
+                  >
                     {p.image_url ? (
                       <button
                         type="button"
-                        onClick={() => setEnlargedProduct(p)}
-                        aria-label={t.products.enlargeImage}
-                        title={t.products.enlargeImage}
+                        onClick={() => handleImageClick(p)}
+                        aria-label={isAdmin ? (p.sold_out ? t.products.markInStock : t.products.markSoldOut) : t.products.enlargeImage}
+                        title={isAdmin ? (p.sold_out ? t.products.markInStock : t.products.markSoldOut) : t.products.enlargeImage}
                         style={{
                           border: "none",
                           background: "transparent",
                           padding: 0,
-                          cursor: "pointer",
+                          cursor: isAdmin || p.image_url ? "pointer" : "default",
                           width: "100%",
                           height: "100%",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
                           position: "relative",
+                          opacity: togglingSoldOut === p.id ? 0.6 : 1,
                         }}
                         onMouseOver={(e) => {
+                          if (isAdmin || p.sold_out) return;
                           const overlay = e.currentTarget.querySelector("[data-zoom-overlay]") as HTMLElement | null;
                           if (overlay) overlay.style.opacity = "1";
                         }}
@@ -232,15 +357,19 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
                         }}
                       >
                         <img
-                          src={p.image_url}
+                          src={cardImageSrc}
                           alt={localized.name}
+                          loading="lazy"
+                          decoding="async"
                           style={{
                             maxWidth: "100%",
                             maxHeight: "100%",
                             objectFit: "contain",
                             transition: "transform 0.2s",
+                            filter: p.sold_out ? "grayscale(0.4)" : "none",
                           }}
                         />
+                        {!isAdmin && !p.sold_out && (
                         <span
                           data-zoom-overlay
                           style={{
@@ -257,11 +386,34 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
                         >
                           <ZoomIn size={32} color="#F4ECD8" strokeWidth={2} />
                         </span>
+                        )}
+                        {p.sold_out && <SoldOutOverlay />}
                       </button>
                     ) : (
-                      <span style={{ fontSize: "4.5rem" }}>
-                        {categoryEmoji[p.category]}
-                      </span>
+                      <button
+                        type="button"
+                        onClick={() => handleImageClick(p)}
+                        aria-label={isAdmin ? (p.sold_out ? t.products.markInStock : t.products.markSoldOut) : localized.name}
+                        title={isAdmin ? (p.sold_out ? t.products.markInStock : t.products.markSoldOut) : undefined}
+                        style={{
+                          border: "none",
+                          background: "transparent",
+                          padding: 0,
+                          cursor: isAdmin ? "pointer" : "default",
+                          width: "100%",
+                          height: "100%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          position: "relative",
+                          opacity: togglingSoldOut === p.id ? 0.6 : 1,
+                        }}
+                      >
+                        <span style={{ fontSize: "4.5rem", filter: p.sold_out ? "grayscale(0.4)" : "none" }}>
+                          {categoryEmoji[p.category]}
+                        </span>
+                        {p.sold_out && <SoldOutOverlay />}
+                      </button>
                     )}
                   </div>
                   <div style={{ padding: "18px" }}>
@@ -304,7 +456,47 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
                     <p style={{ color: "#6B5340", fontSize: "0.88rem", lineHeight: 1.6 }}>{localized.description}</p>
 
                     {isAdmin && (
-                      <div className="flex gap-2 mt-4 pt-3" style={{ borderTop: "1px solid rgba(44,26,14,0.1)" }}>
+                      <div className="flex flex-wrap gap-2 mt-4 pt-3" style={{ borderTop: "1px solid rgba(44,26,14,0.1)" }}>
+                        <button
+                          onClick={() => moveProduct(p.id, "up")}
+                          disabled={index === 0 || isReordering}
+                          aria-label={t.products.moveUp}
+                          title={t.products.moveUp}
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            padding: "5px 8px",
+                            border: "1px solid rgba(44,26,14,0.25)",
+                            borderRadius: "4px",
+                            backgroundColor: "transparent",
+                            color: index === 0 ? "#D4C5A0" : "#6B5340",
+                            cursor: index === 0 || isReordering ? "not-allowed" : "pointer",
+                            opacity: index === 0 || isReordering ? 0.5 : 1,
+                          }}
+                        >
+                          <ChevronUp size={15} />
+                        </button>
+                        <button
+                          onClick={() => moveProduct(p.id, "down")}
+                          disabled={index === filtered.length - 1 || isReordering}
+                          aria-label={t.products.moveDown}
+                          title={t.products.moveDown}
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            padding: "5px 8px",
+                            border: "1px solid rgba(44,26,14,0.25)",
+                            borderRadius: "4px",
+                            backgroundColor: "transparent",
+                            color: index === filtered.length - 1 ? "#D4C5A0" : "#6B5340",
+                            cursor: index === filtered.length - 1 || isReordering ? "not-allowed" : "pointer",
+                            opacity: index === filtered.length - 1 || isReordering ? 0.5 : 1,
+                          }}
+                        >
+                          <ChevronDown size={15} />
+                        </button>
                         <button
                           onClick={() => openEdit(p)}
                           style={{
@@ -415,6 +607,7 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
                   <option value="mate">{categoryLabels.mate}</option>
                   <option value="bombilla">{categoryLabels.bombilla}</option>
                   <option value="gourd">{categoryLabels.gourd}</option>
+                  <option value="other">{categoryLabels.other}</option>
                 </select>
               </div>
 
@@ -542,14 +735,103 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
               </div>
 
               <div>
-                <label style={{ display: "block", color: "#2C1A0E", fontSize: "0.85rem", marginBottom: "6px", fontWeight: 700 }}>
-                  رابط صورة المنتج (Image URL)
+                <label style={{ display: "block", color: "#2C1A0E", fontSize: "0.85rem", marginBottom: "6px", fontWeight: 600 }}>
+                  {t.products.productImage}
                 </label>
+
+                {form.image_url ? (
+                  <div
+                    style={{
+                      position: "relative",
+                      marginBottom: "12px",
+                      borderRadius: "6px",
+                      overflow: "hidden",
+                      border: "1px solid rgba(44,26,14,0.15)",
+                      backgroundColor: "#FFFFFF",
+                      height: "140px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <img
+                      src={optimizeProductImageUrl(form.image_url, 400)}
+                      alt=""
+                      style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setForm({ ...form, image_url: "" })}
+                      style={{
+                        position: "absolute",
+                        top: "8px",
+                        right: "8px",
+                        backgroundColor: "#c0392b",
+                        color: "#F4ECD8",
+                        border: "none",
+                        borderRadius: "4px",
+                        padding: "4px 8px",
+                        fontSize: "0.75rem",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {t.products.removeImage}
+                    </button>
+                  </div>
+                ) : (
+                  <div
+                    style={{
+                      marginBottom: "12px",
+                      padding: "24px",
+                      border: "2px dashed rgba(44,26,14,0.2)",
+                      borderRadius: "6px",
+                      textAlign: "center",
+                      color: "#6B5340",
+                      backgroundColor: "#EDE0C4",
+                    }}
+                  >
+                    <ImageIcon size={28} style={{ margin: "0 auto 8px", opacity: 0.5 }} />
+                  </div>
+                )}
+
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  onChange={handleImageFileChange}
+                  style={{ display: "none" }}
+                />
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploadingImage}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "8px",
+                    width: "100%",
+                    padding: "10px 12px",
+                    marginBottom: "10px",
+                    border: "1px solid rgba(44,26,14,0.25)",
+                    borderRadius: "4px",
+                    backgroundColor: isUploadingImage ? "#D4C5A0" : "#2D5016",
+                    color: "#F4ECD8",
+                    fontSize: "0.9rem",
+                    fontWeight: 600,
+                    cursor: isUploadingImage ? "not-allowed" : "pointer",
+                  }}
+                >
+                  <Upload size={16} />
+                  {isUploadingImage ? t.products.uploadingImage : t.products.uploadImage}
+                </button>
+
+                <p style={{ color: "#6B5340", fontSize: "0.78rem", marginBottom: "6px" }}>{t.products.orPasteUrl}</p>
                 <input
                   type="text"
-                  value={form.image_url || ''}
+                  value={form.image_url || ""}
                   onChange={(e) => setForm({ ...form, image_url: e.target.value })}
-                  placeholder="https://example.com/image.png"
+                  placeholder={t.products.imageUrlPlaceholder}
                   style={{
                     width: "100%",
                     padding: "10px 12px",
@@ -559,7 +841,7 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
                     color: "#2C1A0E",
                     fontSize: "0.9rem",
                     boxSizing: "border-box",
-                    fontFamily
+                    fontFamily,
                   }}
                 />
               </div>
@@ -583,15 +865,15 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
               </button>
               <button
                 onClick={handleSubmit}
-                disabled={!form.name.trim() || form.price <= 0 || isSaving}
+                disabled={!form.name.trim() || form.price <= 0 || isSaving || isUploadingImage}
                 style={{
                   flex: 2,
                   padding: "10px",
-                  backgroundColor: form.name.trim() && form.price > 0 ? "#2D5016" : "#D4C5A0",
+                  backgroundColor: form.name.trim() && form.price > 0 && !isUploadingImage ? "#2D5016" : "#D4C5A0",
                   color: "#F4ECD8",
                   border: "none",
                   borderRadius: "4px",
-                  cursor: form.name.trim() && form.price > 0 ? "pointer" : "not-allowed",
+                  cursor: form.name.trim() && form.price > 0 && !isUploadingImage ? "pointer" : "not-allowed",
                   fontWeight: 700,
                   fontSize: "0.9rem",
                 }}
@@ -637,8 +919,9 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, isAdmin }: 
                   }}
                 >
                   <img
-                    src={enlargedProduct.image_url}
+                    src={optimizeProductImageUrl(enlargedProduct.image_url, 1200)}
                     alt={localized.name}
+                    decoding="async"
                     style={{
                       maxWidth: "100%",
                       maxHeight: "75vh",
