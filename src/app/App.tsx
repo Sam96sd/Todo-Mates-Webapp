@@ -245,6 +245,7 @@ export default function App() {
         onUpdateCartQty={handleUpdateCartQty}
         onRemoveFromCart={handleRemoveFromCart}
         onUpdateTiers={handleUpdateTiers}
+        whatsapp={contactInfo.whatsapp || "wa.me/+963947941447"}
         isAdmin={isAdmin}
       />
 

@@ -89,6 +89,10 @@ export const translations = {
       bulkDiscount: "Bulk Discount ({pct}%)",
       total: "Total",
       unlockDiscount: "Order 3+ pieces to unlock bulk discounts",
+      buyNow: "Buy now via WhatsApp",
+      buyNowHint:
+        "Opens WhatsApp with your order ready — review the message and tap Send to complete your order.",
+      buyNowNoWhatsApp: "To complete your order, send a screenshot of this order to WhatsApp:",
       discountTiers: "Discount Tiers",
       editTiers: "Edit Tiers",
       piecesMin: "{qty}+ pieces",
@@ -264,6 +268,10 @@ export const translations = {
       bulkDiscount: "خصم الجملة ({pct}%)",
       total: "الإجمالي",
       unlockDiscount: "اطلب 3 قطع فأكثر لفتح خصومات الجملة",
+      buyNow: "اشتري الآن عبر واتساب",
+      buyNowHint:
+        "يفتح واتساب مع طلبك جاهزاً — راجع الرسالة واضغط إرسال لإتمام الطلب.",
+      buyNowNoWhatsApp: "لإتمام الطلب، أرسل لقطة شاشة لهذا الطلب إلى واتساب:",
       discountTiers: "مستويات الخصم",
       editTiers: "تعديل المستويات",
       piecesMin: "{qty}+ قطعة",

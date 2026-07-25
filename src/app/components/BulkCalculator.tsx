@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Plus, Minus, Pencil, Check, X, Trash2 } from "lucide-react";
+import { Plus, Minus, Pencil, Check, X, Trash2, MessageCircle } from "lucide-react";
 import type { Product } from "./ProductsSection";
 import type { CartItem } from "../../lib/cart";
+import { buildWhatsAppUrl } from "../../lib/whatsapp";
 import { useLanguage, interpolate } from "../i18n/LanguageContext";
 import { getLocalizedProduct } from "../i18n/translations";
 
@@ -18,6 +19,7 @@ interface BulkCalculatorProps {
   onUpdateCartQty: (productId: string, qty: number) => void;
   onRemoveFromCart: (productId: string) => void;
   onUpdateTiers: (tiers: BulkTier[]) => Promise<void>;
+  whatsapp: string;
   isAdmin: boolean;
 }
 
@@ -29,6 +31,7 @@ export function BulkCalculator({
   onUpdateCartQty,
   onRemoveFromCart,
   onUpdateTiers,
+  whatsapp,
   isAdmin,
 }: BulkCalculatorProps) {
   const [pendingProduct, setPendingProduct] = useState<string>("");
@@ -100,6 +103,50 @@ export function BulkCalculator({
   };
 
   const sortedTiers = [...tiers].sort((a, b) => a.minQty - b.minQty);
+
+  const buildOrderMessage = () => {
+    const lines = cartItems
+      .map((item) => {
+        const product = products.find((p) => p.id === item.productId);
+        if (!product) return null;
+        const localized = getLocalizedProduct(product, language);
+        return `• ${localized.name} × ${item.qty} — ${formatPrice(product.price * item.qty)}`;
+      })
+      .filter(Boolean);
+
+    if (language === "ar") {
+      return [
+        "مرحباً! أود تقديم طلب من Todo Mates:",
+        "",
+        ...lines,
+        "",
+        `إجمالي القطع: ${totalQty}`,
+        `المجموع الفرعي: ${formatPrice(subtotal)}`,
+        ...(discountPct > 0 ? [`خصم الجملة (${discountPct}%): − ${formatPrice(savings)}`] : []),
+        `الإجمالي: ${formatPrice(discounted)}`,
+        "",
+        "شكراً!",
+      ].join("\n");
+    }
+
+    return [
+      "Hello! I would like to place an order from Todo Mates:",
+      "",
+      ...lines,
+      "",
+      `Total pieces: ${totalQty}`,
+      `Subtotal: ${formatPrice(subtotal)}`,
+      ...(discountPct > 0 ? [`Bulk discount (${discountPct}%): − ${formatPrice(savings)}`] : []),
+      `Total: ${formatPrice(discounted)}`,
+      "",
+      "Thank you!",
+    ].join("\n");
+  };
+
+  const whatsappOrderUrl =
+    cartItems.length > 0 && whatsapp
+      ? buildWhatsAppUrl(whatsapp, buildOrderMessage())
+      : "";
 
   return (
     <section
@@ -390,6 +437,52 @@ export function BulkCalculator({
                     {discountPct === 0 && totalQty < 3 && (
                       <p style={{ color: "rgba(244,236,216,0.5)", fontSize: "0.78rem", marginTop: "8px" }}>
                         {t.bulk.unlockDiscount}
+                      </p>
+                    )}
+                  </div>
+
+                  <div
+                    style={{
+                      marginTop: "12px",
+                      padding: "14px",
+                      backgroundColor: "rgba(37, 211, 102, 0.1)",
+                      border: "1px solid rgba(37, 211, 102, 0.25)",
+                      borderRadius: "6px",
+                    }}
+                  >
+                    {whatsappOrderUrl ? (
+                      <>
+                        <p style={{ color: "rgba(244,236,216,0.75)", fontSize: "0.82rem", lineHeight: 1.5, marginBottom: "12px" }}>
+                          {t.bulk.buyNowHint}
+                        </p>
+                        <a
+                          href={whatsappOrderUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            gap: "8px",
+                            width: "100%",
+                            padding: "12px 16px",
+                            backgroundColor: "#25D366",
+                            color: "#FFFFFF",
+                            borderRadius: "6px",
+                            fontWeight: 700,
+                            fontSize: "0.95rem",
+                            textDecoration: "none",
+                            boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                          }}
+                        >
+                          <MessageCircle size={18} />
+                          {t.bulk.buyNow}
+                        </a>
+                      </>
+                    ) : (
+                      <p style={{ color: "rgba(244,236,216,0.75)", fontSize: "0.82rem", lineHeight: 1.6 }}>
+                        {t.bulk.buyNowNoWhatsApp}{" "}
+                        <strong style={{ color: "#F4ECD8" }}>wa.me/+963947941447</strong>
                       </p>
                     )}
                   </div>
