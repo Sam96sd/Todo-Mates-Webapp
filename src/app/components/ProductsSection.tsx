@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Plus, Pencil, Trash2, X, Check, Package, ZoomIn, ChevronUp, ChevronDown, Upload, ImageIcon } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Check, Package, ZoomIn, ChevronUp, ChevronDown, Upload, ImageIcon, Minus, ShoppingCart } from "lucide-react";
 import { useLanguage } from "../i18n/LanguageContext";
 import { getLocalizedProduct } from "../i18n/translations";
 import { uploadProductImage } from "../../lib/api";
@@ -33,6 +33,7 @@ interface ProductsSectionProps {
   onEdit: (p: Product) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
   onReorder: (order: string[]) => Promise<void>;
+  onAddToCart: (productId: string, qty: number) => void;
   isAdmin: boolean;
 }
 
@@ -86,7 +87,7 @@ function SoldOutOverlay() {
   );
 }
 
-export function ProductsSection({ products, onAdd, onEdit, onDelete, onReorder, isAdmin }: ProductsSectionProps) {
+export function ProductsSection({ products, onAdd, onEdit, onDelete, onReorder, onAddToCart, isAdmin }: ProductsSectionProps) {
   const [filter, setFilter] = useState<Category | "all">("all");
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -98,6 +99,8 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, onReorder, 
   const [enlargedProduct, setEnlargedProduct] = useState<Product | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [addQty, setAddQty] = useState<Record<string, number>>({});
+  const [justAdded, setJustAdded] = useState<string | null>(null);
   const { t, language, isRTL } = useLanguage();
   const fontFamily = isRTL ? "'Cairo', sans-serif" : "'Lato', sans-serif";
   const serifFamily = isRTL ? "'Cairo', sans-serif" : "'Playfair Display', serif";
@@ -206,6 +209,19 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, onReorder, 
     } finally {
       setIsReordering(false);
     }
+  };
+
+  const getAddQty = (productId: string) => addQty[productId] ?? 1;
+
+  const setAddQtyFor = (productId: string, qty: number) => {
+    setAddQty((prev) => ({ ...prev, [productId]: Math.max(1, qty) }));
+  };
+
+  const handleAddToBulk = (productId: string) => {
+    const qty = getAddQty(productId);
+    onAddToCart(productId, qty);
+    setJustAdded(productId);
+    window.setTimeout(() => setJustAdded((current) => (current === productId ? null : current)), 1500);
   };
 
   const handleImageClick = async (p: Product) => {
@@ -454,6 +470,90 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, onReorder, 
                       </p>
                     </div>
                     <p style={{ color: "#6B5340", fontSize: "0.88rem", lineHeight: 1.6 }}>{localized.description}</p>
+
+                    {!p.sold_out && (
+                      <div
+                        className="flex items-center gap-2 mt-3 pt-3"
+                        style={{ borderTop: "1px solid rgba(44,26,14,0.1)" }}
+                      >
+                        <span style={{ color: "#6B5340", fontSize: "0.78rem", flexShrink: 0 }}>
+                          {t.products.qty}:
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setAddQtyFor(p.id, getAddQty(p.id) - 1)}
+                          aria-label={t.products.decreaseQty}
+                          style={{
+                            width: "28px",
+                            height: "28px",
+                            borderRadius: "50%",
+                            border: "1px solid rgba(44,26,14,0.25)",
+                            backgroundColor: "transparent",
+                            color: "#6B5340",
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            flexShrink: 0,
+                          }}
+                        >
+                          <Minus size={13} />
+                        </button>
+                        <span
+                          style={{
+                            minWidth: "24px",
+                            textAlign: "center",
+                            color: "#2C1A0E",
+                            fontWeight: 700,
+                            fontSize: "0.95rem",
+                          }}
+                        >
+                          {getAddQty(p.id)}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setAddQtyFor(p.id, getAddQty(p.id) + 1)}
+                          aria-label={t.products.increaseQty}
+                          style={{
+                            width: "28px",
+                            height: "28px",
+                            borderRadius: "50%",
+                            border: "1px solid rgba(44,26,14,0.25)",
+                            backgroundColor: "transparent",
+                            color: "#6B5340",
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            flexShrink: 0,
+                          }}
+                        >
+                          <Plus size={13} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleAddToBulk(p.id)}
+                          style={{
+                            marginLeft: "auto",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "5px",
+                            padding: "6px 12px",
+                            border: "none",
+                            borderRadius: "4px",
+                            backgroundColor: justAdded === p.id ? "#2D5016" : "#B85C38",
+                            color: "#F4ECD8",
+                            fontSize: "0.8rem",
+                            fontWeight: 700,
+                            cursor: "pointer",
+                            flexShrink: 0,
+                          }}
+                        >
+                          <ShoppingCart size={14} />
+                          {justAdded === p.id ? t.products.addedToOrder : t.bulk.addToOrder}
+                        </button>
+                      </div>
+                    )}
 
                     {isAdmin && (
                       <div className="flex flex-wrap gap-2 mt-4 pt-3" style={{ borderTop: "1px solid rgba(44,26,14,0.1)" }}>

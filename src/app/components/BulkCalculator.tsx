@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Plus, Minus, Pencil, Check, X, Trash2 } from "lucide-react";
 import type { Product } from "./ProductsSection";
+import type { CartItem } from "../../lib/cart";
 import { useLanguage, interpolate } from "../i18n/LanguageContext";
 import { getLocalizedProduct } from "../i18n/translations";
 
@@ -9,20 +10,27 @@ interface BulkTier {
   discountPct: number;
 }
 
-interface CartItem {
-  productId: string;
-  qty: number;
-}
-
 interface BulkCalculatorProps {
   products: Product[];
   tiers: BulkTier[];
+  cartItems: CartItem[];
+  onAddToCart: (productId: string, qty: number) => void;
+  onUpdateCartQty: (productId: string, qty: number) => void;
+  onRemoveFromCart: (productId: string) => void;
   onUpdateTiers: (tiers: BulkTier[]) => Promise<void>;
   isAdmin: boolean;
 }
 
-export function BulkCalculator({ products, tiers, onUpdateTiers, isAdmin }: BulkCalculatorProps) {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+export function BulkCalculator({
+  products,
+  tiers,
+  cartItems,
+  onAddToCart,
+  onUpdateCartQty,
+  onRemoveFromCart,
+  onUpdateTiers,
+  isAdmin,
+}: BulkCalculatorProps) {
   const [pendingProduct, setPendingProduct] = useState<string>("");
   const [pendingQty, setPendingQty] = useState(1);
   const [editingTiers, setEditingTiers] = useState(false);
@@ -55,33 +63,9 @@ export function BulkCalculator({ products, tiers, onUpdateTiers, isAdmin }: Bulk
 
   const addToCart = () => {
     if (!pendingProduct) return;
-    setCartItems((prev) => {
-      const existing = prev.find((item) => item.productId === pendingProduct);
-      if (existing) {
-        return prev.map((item) =>
-          item.productId === pendingProduct
-            ? { ...item, qty: item.qty + pendingQty }
-            : item
-        );
-      }
-      return [...prev, { productId: pendingProduct, qty: pendingQty }];
-    });
+    onAddToCart(pendingProduct, pendingQty);
     setPendingProduct("");
     setPendingQty(1);
-  };
-
-  const updateCartQty = (productId: string, qty: number) => {
-    if (qty < 1) {
-      setCartItems((prev) => prev.filter((item) => item.productId !== productId));
-      return;
-    }
-    setCartItems((prev) =>
-      prev.map((item) => (item.productId === productId ? { ...item, qty } : item))
-    );
-  };
-
-  const removeFromCart = (productId: string) => {
-    setCartItems((prev) => prev.filter((item) => item.productId !== productId));
   };
 
   const addDraftTier = () => {
@@ -297,7 +281,7 @@ export function BulkCalculator({ products, tiers, onUpdateTiers, isAdmin }: Bulk
                               {formatPrice(lineTotal)}
                             </span>
                             <button
-                              onClick={() => removeFromCart(item.productId)}
+                              onClick={() => onRemoveFromCart(item.productId)}
                               aria-label={t.bulk.removeItem}
                               style={{
                                 color: "rgba(244,236,216,0.45)",
@@ -312,7 +296,7 @@ export function BulkCalculator({ products, tiers, onUpdateTiers, isAdmin }: Bulk
                         </div>
                         <div className="flex items-center gap-2">
                           <button
-                            onClick={() => updateCartQty(item.productId, item.qty - 1)}
+                            onClick={() => onUpdateCartQty(item.productId, item.qty - 1)}
                             style={{
                               width: "28px",
                               height: "28px",
@@ -332,7 +316,7 @@ export function BulkCalculator({ products, tiers, onUpdateTiers, isAdmin }: Bulk
                             {item.qty}
                           </span>
                           <button
-                            onClick={() => updateCartQty(item.productId, item.qty + 1)}
+                            onClick={() => onUpdateCartQty(item.productId, item.qty + 1)}
                             style={{
                               width: "28px",
                               height: "28px",

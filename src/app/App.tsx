@@ -7,6 +7,7 @@ import { AboutSection } from "./components/AboutSection";
 import { FAQChatbot } from "./components/FAQChatbot";
 import { Footer } from "./components/Footer";
 import { useLanguage } from "./i18n/LanguageContext";
+import { addCartItem, removeCartItem, updateCartItemQty, type CartItem } from "../lib/cart";
 import {
   fetchProducts,
   fetchSettings,
@@ -45,6 +46,7 @@ export default function App() {
   const [authPasswordInput, setAuthPasswordInput] = useState("");
   const [authError, setAuthError] = useState<string | null>(null);
   const [isVerifying, setIsVerifying] = useState(false);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
   // Auto-restore admin session if token exists
   useEffect(() => {
@@ -144,6 +146,18 @@ export default function App() {
     setProducts(reordered);
   };
 
+  const handleAddToCart = (productId: string, qty: number) => {
+    setCartItems((prev) => addCartItem(prev, productId, qty));
+  };
+
+  const handleUpdateCartQty = (productId: string, qty: number) => {
+    setCartItems((prev) => updateCartItemQty(prev, productId, qty));
+  };
+
+  const handleRemoveFromCart = (productId: string) => {
+    setCartItems((prev) => removeCartItem(prev, productId));
+  };
+
   const handleUpdateTiers = async (nextTiers: DiscountTier[]) => {
     const settings = await updateDiscountTiers(nextTiers);
     setTiers(settings.discountTiers);
@@ -219,12 +233,17 @@ export default function App() {
         onEdit={handleEditProduct}
         onDelete={handleDeleteProduct}
         onReorder={handleReorderProducts}
+        onAddToCart={handleAddToCart}
         isAdmin={isAdmin}
       />
 
       <BulkCalculator
         products={products}
         tiers={tiers}
+        cartItems={cartItems}
+        onAddToCart={handleAddToCart}
+        onUpdateCartQty={handleUpdateCartQty}
+        onRemoveFromCart={handleRemoveFromCart}
         onUpdateTiers={handleUpdateTiers}
         isAdmin={isAdmin}
       />

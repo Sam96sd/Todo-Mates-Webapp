@@ -65,6 +65,10 @@ export const translations = {
       removeImage: "Remove image",
       uploadFailed: "Could not upload image. Check Cloudinary settings or try again.",
       invalidImage: "Invalid image file",
+      qty: "Qty",
+      decreaseQty: "Decrease quantity",
+      increaseQty: "Increase quantity",
+      addedToOrder: "Added!",
     },
     bulk: {
       subtitle: "Save More Together",
@@ -236,6 +240,10 @@ export const translations = {
       removeImage: "إزالة الصورة",
       uploadFailed: "تعذر رفع الصورة. تحقق من إعدادات Cloudinary أو حاول مرة أخرى.",
       invalidImage: "ملف صورة غير صالح",
+      qty: "الكمية",
+      decreaseQty: "تقليل الكمية",
+      increaseQty: "زيادة الكمية",
+      addedToOrder: "تمت الإضافة!",
     },
     bulk: {
       subtitle: "احصل على الخصومات",
