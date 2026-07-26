@@ -46,44 +46,62 @@ const categoryEmoji: Record<Category, string> = {
 
 const EMPTY_FORM = { name: "", description: "", price: 0, category: "mate" as Category, image_url: "", sold_out: false };
 
-function SoldOutOverlay() {
+function SoldOutBadge({ isRTL }: { isRTL: boolean }) {
+  const cornerSide = isRTL ? "left" : "right";
+
   return (
-    <div
-      style={{
-        position: "absolute",
-        inset: 0,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: "rgba(192, 57, 43, 0.82)",
-        zIndex: 2,
-        pointerEvents: "none",
-        gap: "4px",
-      }}
-    >
-      <span
+    <>
+      <div
         style={{
-          color: "#F4ECD8",
-          fontWeight: 800,
-          fontSize: "1.15rem",
-          letterSpacing: "0.12em",
-          textTransform: "uppercase",
+          position: "absolute",
+          top: 0,
+          [cornerSide]: 0,
+          width: 88,
+          height: 88,
+          overflow: "hidden",
+          zIndex: 2,
+          pointerEvents: "none",
         }}
       >
-        SOLD OUT
-      </span>
-      <span
+        <div
+          style={{
+            position: "absolute",
+            top: 16,
+            [cornerSide]: -26,
+            width: 120,
+            transform: isRTL ? "rotate(-45deg)" : "rotate(45deg)",
+            backgroundColor: "#c0392b",
+            color: "#F4ECD8",
+            textAlign: "center",
+            padding: "4px 0",
+            fontWeight: 800,
+            fontSize: "0.62rem",
+            letterSpacing: "0.08em",
+            boxShadow: "0 2px 6px rgba(44, 26, 14, 0.2)",
+          }}
+        >
+          SOLD OUT
+        </div>
+      </div>
+      <div
         style={{
+          position: "absolute",
+          bottom: 10,
+          [cornerSide]: 10,
+          backgroundColor: "rgba(192, 57, 43, 0.9)",
           color: "#F4ECD8",
+          padding: "3px 9px",
+          borderRadius: "4px",
           fontWeight: 700,
-          fontSize: "1rem",
+          fontSize: "0.7rem",
           fontFamily: "'Cairo', sans-serif",
+          zIndex: 2,
+          pointerEvents: "none",
         }}
       >
         نفذت الكمية
-      </span>
-    </div>
+      </div>
+    </>
   );
 }
 
@@ -382,7 +400,8 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, onReorder, 
                             maxHeight: "100%",
                             objectFit: "contain",
                             transition: "transform 0.2s",
-                            filter: p.sold_out ? "grayscale(0.4)" : "none",
+                            filter: p.sold_out ? "grayscale(0.15)" : "none",
+                            opacity: p.sold_out ? 0.92 : 1,
                           }}
                         />
                         {!isAdmin && !p.sold_out && (
@@ -403,7 +422,7 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, onReorder, 
                           <ZoomIn size={32} color="#F4ECD8" strokeWidth={2} />
                         </span>
                         )}
-                        {p.sold_out && <SoldOutOverlay />}
+                        {p.sold_out && <SoldOutBadge isRTL={isRTL} />}
                       </button>
                     ) : (
                       <button
@@ -425,10 +444,10 @@ export function ProductsSection({ products, onAdd, onEdit, onDelete, onReorder, 
                           opacity: togglingSoldOut === p.id ? 0.6 : 1,
                         }}
                       >
-                        <span style={{ fontSize: "4.5rem", filter: p.sold_out ? "grayscale(0.4)" : "none" }}>
+                        <span style={{ fontSize: "4.5rem", filter: p.sold_out ? "grayscale(0.15)" : "none", opacity: p.sold_out ? 0.92 : 1 }}>
                           {categoryEmoji[p.category]}
                         </span>
-                        {p.sold_out && <SoldOutOverlay />}
+                        {p.sold_out && <SoldOutBadge isRTL={isRTL} />}
                       </button>
                     )}
                   </div>
